@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════
+   ATM MALL — ULTRA LUXURY DESIGN SYSTEM
+   Color Palette:
+   Deep Obsidian: #08080E
+   Midnight: #0D0D18
+   Rich Dark: #111120
+   Gold Primary: #C9A84C
+   Gold Light: #F0CC6E
+   Gold Pale: #FAE9B8
+   Ivory: #F5F0E8
+   Cream: #FAF7F2
+   ═══════════════════════════════════════════════════════ */
+
 * {
   margin: 0;
   padding: 0;
@@ -10,53 +23,479 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 14.5px;        /* 15% smaller base scale for a tighter, premium feel */
 }
 
 html, body, #root {
   width: 100%;
-  background-color: #000000;
-  color: #ffffff;
+  min-height: 100%;
+  background-color: #08080E;
+  color: #F5F0E8;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.01em;
+  line-height: 1.65;
 }
 
-/* Custom Premium Scrollbar */
-::-webkit-scrollbar {
+body {
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button, a {
+  font: inherit;
+}
+
+/* ─── LUXURY CUSTOM CURSOR ─────────────────────────── */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 8px;
   height: 8px;
+  background: #C9A84C;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate3d(0, 0, 0) translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  mix-blend-mode: normal;
+  will-change: transform;
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(201, 168, 76, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate3d(0, 0, 0) translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+  will-change: transform;
+}
+
+/* Expanded state (over buttons/links) */
+.cursor-dot--expanded {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.cursor-ring--expanded {
+  width: 56px;
+  height: 56px;
+  border-color: #C9A84C;
+  background-color: rgba(201, 168, 76, 0.08);
+}
+
+/* Shrunk state (over text) */
+.cursor-dot--shrunk {
+  width: 4px;
+  height: 4px;
+  background-color: #C9A84C;
+}
+
+.cursor-ring--shrunk {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  border-color: transparent;
+}
+
+/* ─── TYPOGRAPHY ────────────────────────────────────── */
+.font-display {
+  font-family: 'Cinzel', serif;
+}
+
+.font-serif-elegant {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Fluid luxury display sizes — used on hero / footer headings */
+.text-display-xl {
+  font-size: clamp(3.5rem, 9vw, 9rem);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+}
+
+.text-display-lg {
+  font-size: clamp(2.8rem, 6.5vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.015em;
+}
+
+.text-display-md {
+  font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+/* Short luxury paragraph — max-width + generous leading */
+.luxury-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  max-width: 52ch;
+  color: rgba(245, 240, 232, 0.45);
+  font-style: italic;
+}
+
+.luxury-body-sm {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 44ch;
+  color: rgba(245, 240, 232, 0.38);
+  font-style: italic;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #08080E;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: linear-gradient(180deg, #C9A84C 0%, #8B6B2A 100%);
   border-radius: 9999px;
-  border: 2px solid #f1f5f9;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* ─── ANIMATIONS ────────────────────────────────────── */
+@keyframes zoomSlow {
+  from { transform: scale(1.0); }
+  to   { transform: scale(1.12); }
 }
 
-@keyframes scrollLine {
+@keyframes floatGold {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+  50%       { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+}
+
+@keyframes shimmerGold {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ─── AMBIENT BACKGROUND EFFECTS ───────────────────── */
+@keyframes ambientFloat {
+  0%   { transform: translateY(0px)   translateX(0px)   scale(1.0); opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { transform: translateY(-40px) translateX(12px)  scale(1.1); }
+  85%  { opacity: 1; }
+  100% { transform: translateY(-80px) translateX(-8px)  scale(0.9); opacity: 0; }
+}
+
+@keyframes orbDrift {
+  0%   { transform: translate(0,    0)    scale(1.0); }
+  33%  { transform: translate(30px, -20px) scale(1.05); }
+  66%  { transform: translate(-20px, 15px) scale(0.95); }
+  100% { transform: translate(0,    0)    scale(1.0); }
+}
+
+@keyframes orbPulse {
+  0%, 100% { opacity: 0.06; }
+  50%       { opacity: 0.12; }
+}
+
+.ambient-particle {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.9) 0%, rgba(201,168,76,0.2) 60%, transparent 100%);
+  pointer-events: none;
+  animation: ambientFloat var(--amb-dur, 12s) ease-in-out infinite;
+  animation-delay: var(--amb-delay, 0s);
+  width: var(--amb-size, 3px);
+  height: var(--amb-size, 3px);
+  left: var(--amb-x, 50%);
+  top: 100%;
+  box-shadow: 0 0 4px 1px rgba(201,168,76,0.25);
+  will-change: transform, opacity;
+  z-index: 0;
+}
+
+.ambient-orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  animation: orbDrift var(--orb-dur, 22s) ease-in-out infinite, orbPulse var(--orb-pulse, 8s) ease-in-out infinite;
+  animation-delay: var(--orb-delay, 0s);
+  will-change: transform, opacity;
+  z-index: 0;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 76, 0.2), 0 0 60px rgba(201, 168, 76, 0.1); }
+  50%       { box-shadow: 0 0 40px rgba(201, 168, 76, 0.5), 0 0 80px rgba(201, 168, 76, 0.2); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes lineGrow {
+  from { width: 0; opacity: 0; }
+  to   { width: 80px; opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scrollDown {
+  0%        { transform: translateY(-8px); opacity: 0; }
+  40%, 60%  { opacity: 1; }
+  100%      { transform: translateY(8px); opacity: 0; }
+}
+
+@keyframes particleFloat {
+  0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-20px) translateX(var(--drift)) scale(1); opacity: 0; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(201, 168, 76, 0.2); }
+  50%       { border-color: rgba(201, 168, 76, 0.7); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── HERO ──────────────────────────────────────────── */
+@keyframes kenBurns {
   0% {
-    transform: translateY(-100%);
+    transform: scale(1.0) translate(0, 0);
   }
-  50%, 100% {
-    transform: translateY(200%);
+  50% {
+    transform: scale(1.08) translate(-0.5%, -0.5%);
+  }
+  100% {
+    transform: scale(1.15) translate(0.5%, 0.5%);
   }
 }
 
-.animate-scroll-line {
-  animation: scrollLine 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+.hero-image {
+  animation: kenBurns 40s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
-/* ═══════════════════════════════════════════════
-   LUXURY BUTTON ANIMATIONS — ATM MALL
-   Effect: Color fills from inside → outward on hover
-═══════════════════════════════════════════════ */
+/* Subtle moving light rays overlay */
+.light-rays {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(251, 239, 192, 0.04) 0%,
+    transparent 60%,
+    rgba(251, 239, 192, 0.02) 100%
+  );
+  filter: blur(40px);
+  transform-origin: top left;
+  animation: sweepRays 16s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: screen;
+}
 
-/* Shared base for all fill buttons */
+@keyframes sweepRays {
+  0% { transform: rotate(-3deg) scale(1.0); opacity: 0.3; }
+  50% { opacity: 0.6; }
+  100% { transform: rotate(3deg) scale(1.15); opacity: 0.3; }
+}
+
+.hero-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: radial-gradient(circle, #F0CC6E, #C9A84C);
+  border-radius: 50%;
+  animation: particleFloat var(--duration, 8s) ease-in infinite;
+  animation-delay: var(--delay, 0s);
+  left: var(--x, 50%);
+  bottom: -10px;
+  box-shadow: 0 0 6px 2px rgba(201, 168, 76, 0.4);
+}
+
+/* ─── GOLD SHIMMER TEXT ─────────────────────────────── */
+.text-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    #8B6B2A 0%,
+    #C9A84C 20%,
+    #F0CC6E 35%,
+    #FAE9B8 50%,
+    #F0CC6E 65%,
+    #C9A84C 80%,
+    #8B6B2A 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerGold 4s linear infinite;
+}
+
+/* ─── GLASS PANELS ──────────────────────────────────── */
+.glass-dark {
+  background: rgba(13, 13, 24, 0.6);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(201, 168, 76, 0.12);
+}
+
+.glass-gold {
+  background: rgba(201, 168, 76, 0.04);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.glass-cream {
+  background: rgba(245, 240, 232, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(245, 240, 232, 0.08);
+}
+
+/* ─── GLOW EFFECTS ──────────────────────────────────── */
+.glow-gold {
+  box-shadow:
+    0 0 30px rgba(201, 168, 76, 0.15),
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(201, 168, 76, 0.1);
+}
+
+.glow-gold-hover {
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.glow-gold-hover:hover {
+  box-shadow:
+    0 0 60px rgba(201, 168, 76, 0.3),
+    0 40px 100px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(201, 168, 76, 0.2);
+  transform: translateY(-8px);
+}
+
+/* ─── LUXURY CARD ────────────────────────────────────── */
+.luxury-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, rgba(17, 17, 32, 0.9) 0%, rgba(13, 13, 24, 0.95) 100%);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.luxury-card:hover::before {
+  opacity: 1;
+}
+
+.luxury-card:hover {
+  border-color: rgba(201, 168, 76, 0.4);
+  transform: translateY(-8px) scale(1.01);
+  box-shadow:
+    0 0 40px rgba(201, 168, 76, 0.15),
+    0 40px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── ORNAMENTAL DIVIDER ────────────────────────────── */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.ornament-divider::before,
+.ornament-divider::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.5), transparent);
+}
+
+.ornament-diamond {
+  width: 6px;
+  height: 6px;
+  background: #C9A84C;
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
+}
+
+/* ─── SECTION LABEL ─────────────────────────────────── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.48em;
+  font-weight: 700;
+  color: #C9A84C;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.section-label::before,
+.section-label::after {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #C9A84C);
+}
+
+.section-label::after {
+  background: linear-gradient(90deg, #C9A84C, transparent);
+}
+
+/* ─── HIGHLIGHT NUMBER ──────────────────────────────── */
+.stat-number {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  background: linear-gradient(135deg, #C9A84C 0%, #F0CC6E 50%, #C9A84C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── LUXURY BUTTONS ────────────────────────────────── */
 .btn-luxury-primary,
 .btn-luxury-ghost,
 .btn-luxury-gold,
@@ -66,10 +505,12 @@ html, body, #root {
   overflow: hidden;
   isolation: isolate;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* The fill circle — always behind text/icons via z-index: -1
-   (safe inside isolation: isolate stacking context) */
+/* Background Expand Ring (before) */
 .btn-luxury-primary::before,
 .btn-luxury-ghost::before,
 .btn-luxury-gold::before,
@@ -84,149 +525,372 @@ html, body, #root {
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   transition:
-    transform 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-    width    0.55s cubic-bezier(0.4, 0, 0.2, 1),
-    height   0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    width    0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    height   0.65s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-  z-index: -1; /* ← key fix: always behind text nodes */
+  z-index: -1;
 }
 
-/* Expand the circle to cover the entire button */
 .btn-luxury-primary:hover::before,
 .btn-luxury-ghost:hover::before,
 .btn-luxury-gold:hover::before,
 .btn-luxury-icon:hover::before,
 .btn-luxury-subtle:hover::before {
-  width: 350%;
-  height: 350%;
+  width: 320%;
+  height: 320%;
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* Text color transitions on the button element cascade to all children
-   including bare text nodes — no extra z-index needed with ::before at -1 */
+/* Gold/White Shine Sweep Overlay (after) */
+.btn-luxury-primary::after,
+.btn-luxury-ghost::after,
+.btn-luxury-gold::after,
+.btn-luxury-subtle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.08) 75%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: none;
+  pointer-events: none;
+  z-index: 2;
+}
 
-/* ── Primary White Button (Brochure / Request Space) ──
-   Fill: Deep Midnight Sapphire #0f1b3d
-   Text goes: black → white
-*/
-.btn-luxury-primary::before {
-  background: #0f1b3d;
+.btn-luxury-primary:hover::after,
+.btn-luxury-ghost:hover::after,
+.btn-luxury-gold:hover::after,
+.btn-luxury-subtle:hover::after {
+  left: 150%;
+  transition: left 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* SVG Arrow sliding effect */
+.btn-luxury-primary svg,
+.btn-luxury-ghost svg,
+.btn-luxury-gold svg,
+.btn-luxury-subtle svg {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-luxury-primary:hover svg,
+.btn-luxury-ghost:hover svg,
+.btn-luxury-gold:hover svg,
+.btn-luxury-subtle:hover svg {
+  transform: translateX(5px);
+}
+
+/* 1. Primary Button Style */
+.btn-luxury-primary::before { 
+  background: linear-gradient(135deg, #C9A84C 0%, #F0CC6E 50%, #C9A84C 100%); 
 }
 .btn-luxury-primary {
-  transition:
-    color       0.4s ease,
-    transform   0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow  0.35s ease;
+  background: #F5F0E8;
+  color: #08080E;
+  border: 1px solid #F5F0E8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  transition: 
+    color 0.4s ease, 
+    border-color 0.4s ease, 
+    background-color 0.4s ease, 
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-luxury-primary:hover {
-  color: #ffffff !important;
-  transform: translateY(-4px) scale(1.04);
-  box-shadow:
-    0 0 24px 6px rgba(15, 27, 61, 0.5),
-    0 16px 40px rgba(0, 0, 0, 0.45);
-}
-.btn-luxury-primary:active {
-  transform: translateY(-1px) scale(1.01);
+  color: #08080E !important;
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 10px 30px rgba(201, 168, 76, 0.22), 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
-/* ── Ghost / Outline Button (Download Brochure) ──
-   Fill: Champagne Gold #c9a84c
-   Text goes: white → rich black
-*/
-.btn-luxury-ghost::before {
-  background: linear-gradient(135deg, #c9a84c 0%, #f5d27a 50%, #c9a84c 100%);
+/* 2. Ghost Button Style */
+.btn-luxury-ghost::before { 
+  background: linear-gradient(135deg, #C9A84C 0%, #F0CC6E 50%, #C9A84C 100%); 
 }
 .btn-luxury-ghost {
-  transition:
-    color        0.4s ease,
-    border-color 0.4s ease,
-    transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow   0.35s ease;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: transparent;
+  color: #F5F0E8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: 
+    color 0.4s ease, 
+    border-color 0.4s ease, 
+    background-color 0.4s ease, 
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-luxury-ghost:hover {
-  color: #0a0a0a !important;
-  border-color: #c9a84c !important;
-  transform: translateY(-4px) scale(1.04);
-  box-shadow:
-    0 0 28px 8px rgba(201, 168, 76, 0.4),
-    0 16px 40px rgba(0, 0, 0, 0.4);
-}
-.btn-luxury-ghost:active {
-  transform: translateY(-1px) scale(1.01);
+  color: #08080E !important;
+  border-color: #C9A84C !important;
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 10px 30px rgba(201, 168, 76, 0.22), 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
-/* ── Gold/Amber CTA Button (Submit Inquiry) ──
-   Fill: Deep Jewel Wine #4a0e2e
-   Text goes: black → champagne gold
-*/
-.btn-luxury-gold::before {
-  background: linear-gradient(135deg, #3a0927 0%, #6b1040 50%, #3a0927 100%);
+/* 3. Gold CTA Button Style */
+.btn-luxury-gold { 
+  background: linear-gradient(90deg, #C9A84C 0%, #F0CC6E 100%); 
+  color: #08080E;
+  border: 1px solid #C9A84C;
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+  transition: 
+    color 0.4s ease, 
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.btn-luxury-gold {
-  transition:
-    color      0.4s ease,
-    transform  0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.35s ease;
+.btn-luxury-gold::before { 
+  background: linear-gradient(135deg, #F5F0E8, #ffffff); 
 }
 .btn-luxury-gold:hover {
-  color: #f5d27a !important;
-  transform: translateY(-4px) scale(1.03);
-  box-shadow:
-    0 0 32px 10px rgba(74, 14, 46, 0.55),
-    0 16px 48px rgba(0, 0, 0, 0.5);
-}
-.btn-luxury-gold:active {
-  transform: translateY(-1px) scale(1.01);
+  color: #08080E !important;
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 10px 30px rgba(201, 168, 76, 0.38), 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
-/* ── Icon Circle Button (Slider arrows ← →) ──
-   Fill: Champagne Gold #c9a84c
-   Icon goes: white → black
-*/
-.btn-luxury-icon::before {
-  background: linear-gradient(135deg, #c9a84c 0%, #f5d27a 50%, #c9a84c 100%);
-}
-.btn-luxury-icon {
-  transition:
-    color        0.4s ease,
-    border-color 0.35s ease,
-    transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow   0.35s ease;
-}
-.btn-luxury-icon:hover {
-  color: #0a0a0a !important;
-  border-color: #c9a84c !important;
-  transform: scale(1.2);
-  box-shadow:
-    0 0 20px 5px rgba(201, 168, 76, 0.45),
-    0 8px 24px rgba(0, 0, 0, 0.5);
-}
-.btn-luxury-icon:active {
-  transform: scale(1.07);
-}
-
-/* ── Subtle Small Button (Submit Another Inquiry) ──
-   Fill: Deep Teal #0d3d3a
-   Text goes: slate → pale gold
-*/
-.btn-luxury-subtle::before {
-  background: linear-gradient(135deg, #0d3d3a 0%, #1a6b66 50%, #0d3d3a 100%);
+/* 4. Subtle Button Style */
+.btn-luxury-subtle::before { 
+  background: linear-gradient(135deg, #C9A84C 0%, #F0CC6E 100%); 
 }
 .btn-luxury-subtle {
-  transition:
-    color        0.4s ease,
-    border-color 0.4s ease,
-    transform    0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow   0.3s ease;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  background: transparent;
+  color: #F5F0E8;
+  transition: 
+    color 0.4s ease, 
+    border-color 0.4s ease, 
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-luxury-subtle:hover {
-  color: #f5d27a !important;
-  border-color: #1a6b66 !important;
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    0 0 16px 4px rgba(13, 61, 58, 0.5),
-    0 8px 20px rgba(0, 0, 0, 0.4);
+  color: #08080E !important;
+  border-color: #C9A84C !important;
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 10px 30px rgba(201, 168, 76, 0.22), 0 16px 40px rgba(0, 0, 0, 0.45);
 }
-.btn-luxury-subtle:active {
-  transform: translateY(-1px);
+
+/* ─── IMAGE OVERLAY GRADIENT ────────────────────────── */
+.img-overlay-luxury {
+  background: linear-gradient(
+    to top,
+    rgba(8, 8, 14, 0.95) 0%,
+    rgba(8, 8, 14, 0.4) 40%,
+    rgba(8, 8, 14, 0.1) 70%,
+    transparent 100%
+  );
+}
+
+/* ─── SCROLL INDICATOR ──────────────────────────────── */
+.scroll-dot {
+  animation: scrollDown 2s ease infinite;
+}
+
+/* ─── BACKGROUND NOISE TEXTURE ──────────────────────── */
+.noise-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+
+/* ─── GOLD ACCENT LINE ──────────────────────────────── */
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(201, 168, 76, 0.6) 30%, #C9A84C 50%, rgba(201, 168, 76, 0.6) 70%, transparent 100%);
+}
+
+/* ─── SECTION DIVIDER ────────────────────────────────── */
+.section-divider-wrap {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.section-divider-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(201, 168, 76, 0.08) 10%,
+    rgba(201, 168, 76, 0.35) 30%,
+    rgba(201, 168, 76, 0.6)  50%,
+    rgba(201, 168, 76, 0.35) 70%,
+    rgba(201, 168, 76, 0.08) 90%,
+    transparent 100%
+  );
+}
+
+/* diamond node at centre */
+.section-divider-diamond {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 6px;
+  height: 6px;
+  background: #C9A84C;
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.6), 0 0 20px rgba(201, 168, 76, 0.25);
+}
+
+/* ─── HORIZONTAL SCROLL STRIP ───────────────────────── */
+.amenity-strip {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 8px;
+}
+
+.amenity-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── GALLERY MASONRY ────────────────────────────────── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 200px);
+  gap: 12px;
+}
+
+.gallery-grid .g-tall {
+  grid-row: span 2;
+}
+
+.gallery-grid .g-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 1024px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+  }
+  .gallery-grid .g-tall,
+  .gallery-grid .g-wide {
+    grid-row: span 1;
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── AMENITY CARD HOVER ────────────────────────────── */
+.glass-amenity-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: rgba(13, 13, 24, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 168, 76, 0.12);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition: 
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.glass-amenity-card:hover {
+  transform: translateY(-9px);
+  border-color: rgba(201, 168, 76, 0.45);
+  box-shadow: 
+    0 0 35px rgba(201, 168, 76, 0.2),
+    0 20px 40px -10px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.amenity-img-wrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.amenity-img-wrap img {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-amenity-card:hover .amenity-img-wrap img {
+  transform: scale(1.08);
+}
+
+/* ─── COUNTER ANIMATION ─────────────────────────────── */
+.counter-animate {
+  animation: countUp 0.8s ease both;
+}
+
+/* ─── FOOTER GRADIENT ────────────────────────────────── */
+.footer-gradient {
+  background: linear-gradient(180deg, #0D0D18 0%, #08080E 100%);
+  border-top: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+/* ─── PULSE RING ─────────────────────────────────────── */
+.pulse-ring {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* ─── FORM INPUTS ─────────────────────────────────────── */
+.luxury-input {
+  width: 100%;
+  background: rgba(245, 240, 232, 0.04);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 0.75rem;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  color: #F5F0E8;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.luxury-input::placeholder {
+  color: rgba(245, 240, 232, 0.3);
+}
+
+.luxury-input:focus {
+  border-color: rgba(201, 168, 76, 0.6);
+  background: rgba(201, 168, 76, 0.04);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.1), inset 0 0 20px rgba(201, 168, 76, 0.03);
+}
+
+/* ─── MOBILE MENU ─────────────────────────────────────── */
+.nav-menu-mobile {
+  background: linear-gradient(135deg, rgba(8, 8, 14, 0.98) 0%, rgba(13, 13, 24, 0.98) 100%);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  backdrop-filter: blur(40px);
+}
+
+/* ─── LUXURY NOISE OVERLAY ──────────────────────────── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 999999;
+  mix-blend-mode: overlay;
 }
