@@ -894,3 +894,173 @@ button, a {
   z-index: 999999;
   mix-blend-mode: overlay;
 }
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS (≤640px)
+   All mobile-only overrides — desktop untouched.
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  /* Base scale — tighter on small screens */
+  html {
+    font-size: 13.5px;
+  }
+
+  /* Gallery grid — taller rows on mobile single-col */
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 10px;
+  }
+
+  .gallery-grid > * {
+    min-height: 220px;
+  }
+
+  .gallery-grid .g-tall,
+  .gallery-grid .g-wide {
+    grid-row: span 1;
+    grid-column: span 1;
+  }
+
+  /* Luxury card — disable hover lift on mobile */
+  .luxury-card:hover {
+    transform: none;
+  }
+
+  .luxury-card {
+    border-radius: 1.25rem;
+  }
+
+  /* Glass amenity card — subtler on mobile */
+  .glass-amenity-card {
+    border-radius: 1.25rem;
+  }
+
+  .glass-amenity-card:hover {
+    transform: none;
+  }
+
+  /* Glow hover — disable lift on touch */
+  .glow-gold-hover:hover {
+    transform: none;
+  }
+
+  /* Section label — tighter tracking on mobile */
+  .section-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+  }
+
+  .section-label::before,
+  .section-label::after {
+    width: 20px;
+  }
+
+  /* Ornament divider — narrower */
+  .ornament-divider::before,
+  .ornament-divider::after {
+    max-width: 60px;
+  }
+
+  /* Buttons — better touch targets */
+  .btn-luxury-primary,
+  .btn-luxury-ghost,
+  .btn-luxury-gold,
+  .btn-luxury-subtle {
+    min-height: 44px;
+    font-size: 9px;
+  }
+
+  /* Form inputs — taller on mobile */
+  .luxury-input {
+    padding: 14px 16px;
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+
+  /* Scrollbar — hide on mobile */
+  ::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  /* Typography — fluid sizes tighter */
+  .text-display-xl {
+    font-size: clamp(2.2rem, 8vw, 3.5rem);
+  }
+
+  .text-display-lg {
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+  }
+
+  .text-display-md {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+
+  .luxury-body {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+
+  .luxury-body-sm {
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+
+  /* Mobile menu — fullscreen overlay */
+  .nav-menu-mobile {
+    position: fixed;
+    inset: 0;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    z-index: 100;
+  }
+
+  /* Reduce ambient effects on mobile for performance */
+  .ambient-particle {
+    display: none;
+  }
+
+  .ambient-orb {
+    display: none;
+  }
+
+  /* Noise overlay — lighter on mobile */
+  .noise-overlay {
+    opacity: 0.5;
+  }
+
+  /* Gold line */
+  .gold-line {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}
+
+/* Touch devices — disable hover transforms globally */
+@media (hover: none) and (pointer: coarse) {
+  .luxury-card:hover {
+    transform: none;
+    box-shadow:
+      0 0 30px rgba(201, 168, 76, 0.15),
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(201, 168, 76, 0.1);
+  }
+
+  .glass-amenity-card:hover {
+    transform: none;
+  }
+
+  .glow-gold-hover:hover {
+    transform: none;
+  }
+
+  /* Ensure buttons have proper touch targets */
+  button, a, [role="button"] {
+    -webkit-tap-highlight-color: rgba(201, 168, 76, 0.1);
+  }
+}

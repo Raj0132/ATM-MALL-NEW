@@ -319,13 +319,14 @@ const TIMELINE_STEPS = [
   },
 ];
 
-function TimelineStep({ step, index, total, isHovered, onHover, onLeave }) {
+function TimelineStep({ step, index, total, isHovered, onHover, onLeave, onClick }) {
   const isLast = index === total - 1;
 
   return (
     <motion.div
       onHoverStart={onHover}
       onHoverEnd={onLeave}
+      onClick={onClick}
       className="relative flex items-stretch cursor-default select-none"
     >
       {/* ── Spine ── */}
@@ -494,7 +495,7 @@ function LuxuryTimeline() {
               <div>
                 <span className="section-label">The Journey</span>
                 <h2
-                  className="mt-4 text-5xl font-bold tracking-tight text-[#F5F0E8]/90 sm:text-6xl lg:text-7xl leading-none"
+                  className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-[#F5F0E8]/90 sm:text-6xl lg:text-7xl leading-none"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   A day at<br />
@@ -567,6 +568,7 @@ function LuxuryTimeline() {
                       isHovered={hoveredStep === i}
                       onHover={() => setHoveredStep(i)}
                       onLeave={() => setHoveredStep(null)}
+                      onClick={() => setHoveredStep(hoveredStep === i ? null : i)}
                     />
                   </motion.div>
                 ))}
@@ -1033,7 +1035,7 @@ export default function App() {
             : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-12">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-5 lg:px-12">
           {/* Logo */}
           <a
             href="#home"
@@ -1122,9 +1124,9 @@ export default function App() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -16, scale: 0.97 }}
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="fixed inset-x-4 top-16 z-50 rounded-2xl nav-menu-mobile p-6 shadow-[0_40px_120px_rgba(0,0,0,0.8)] lg:hidden"
+              className="fixed inset-0 top-0 z-50 rounded-none sm:rounded-2xl sm:inset-x-4 sm:top-16 sm:inset-y-auto nav-menu-mobile p-6 shadow-[0_40px_120px_rgba(0,0,0,0.8)] lg:hidden flex flex-col justify-center items-center sm:block"
             >
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-6 sm:gap-6 items-center sm:items-start w-full">
                 {navLinks.map((link, i) => {
                   const isActive = activeSection === link.href.substring(1);
                   return (
@@ -1138,7 +1140,7 @@ export default function App() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className={`text-lg font-semibold uppercase tracking-[0.2em] transition ${
+                      className={`text-2xl sm:text-lg font-semibold uppercase tracking-[0.2em] transition ${
                         isActive ? 'text-[#C9A84C]' : 'text-[#F5F0E8]/70 hover:text-[#C9A84C]'
                       }`}
                       style={{ fontFamily: "'Cinzel', serif" }}
@@ -1202,7 +1204,7 @@ export default function App() {
           {/* Content */}
           <motion.div
             style={{ opacity: heroOpacity }}
-            className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-5 py-28 text-center"
+            className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-4 py-20 sm:px-5 sm:py-28 text-center"
           >
             <div>
               {/* Pre-label */}
@@ -1210,11 +1212,11 @@ export default function App() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="mb-8 inline-flex items-center gap-3 rounded-full border border-[#C9A84C]/25 bg-[#C9A84C]/5 px-5 py-2 backdrop-blur-xl"
+                className="mb-6 sm:mb-8 inline-flex items-center gap-2 sm:gap-3 rounded-full border border-[#C9A84C]/25 bg-[#C9A84C]/5 px-3 py-1.5 sm:px-5 sm:py-2 backdrop-blur-xl"
               >
                 <Star className="h-3 w-3 text-[#C9A84C] fill-current" />
                 <span
-                  className="text-[9px] font-semibold uppercase tracking-[0.4em] text-[#C9A84C]"
+                  className="text-[7px] sm:text-[9px] font-semibold uppercase tracking-[0.2em] sm:tracking-[0.4em] text-[#C9A84C]"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Luxury Hotel · Retail Mall · Resort Living
@@ -1228,7 +1230,7 @@ export default function App() {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-5xl font-bold leading-[1.05] tracking-tight text-[#F5F0E8] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
+                  className="text-3xl font-bold leading-[1.05] tracking-tight text-[#F5F0E8] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Experience
@@ -1241,7 +1243,7 @@ export default function App() {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1.2, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-6xl lg:text-[5rem]"
+                  className="text-3xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-6xl lg:text-[5rem]"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   <span className="text-gold-shimmer">Luxury</span>
@@ -1254,7 +1256,7 @@ export default function App() {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-5xl font-bold leading-[1.05] tracking-tight text-[#F5F0E8] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
+                  className="text-3xl font-bold leading-[1.05] tracking-tight text-[#F5F0E8] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Beyond Limits
@@ -1266,7 +1268,7 @@ export default function App() {
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 transition={{ duration: 0.8, delay: 0.75 }}
-                className="mx-auto mb-8 w-64"
+                className="mx-auto mb-6 sm:mb-8 w-40 sm:w-64"
               >
                 <GoldDivider />
               </motion.div>
@@ -1276,7 +1278,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.9, ease: "easeOut" }}
-                className="mx-auto mb-12 max-w-2xl text-base leading-relaxed text-[#F5F0E8]/55 sm:text-lg"
+                className="mx-auto mb-8 sm:mb-12 max-w-2xl text-sm leading-relaxed text-[#F5F0E8]/55 sm:text-lg"
                 style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
               >
                 A destination where premium hospitality, luxury shopping, resort living and world-class amenities converge in a cinematic, museum-quality experience.
@@ -1287,12 +1289,12 @@ export default function App() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 1.05, ease: "easeOut" }}
-                className="flex flex-col items-center justify-center gap-4 sm:flex-row"
+                className="flex flex-col items-center justify-center gap-3 sm:gap-4 sm:flex-row w-full sm:w-auto"
               >
                 <a
                   href="#amenities"
                   onClick={(e) => handleNavClick(e, '#amenities')}
-                  className="btn-luxury-primary inline-flex items-center gap-3 rounded-full px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.35em] shadow-[0_0_40px_rgba(201,168,76,0.2)]"
+                  className="btn-luxury-primary inline-flex items-center gap-3 rounded-full px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.35em] shadow-[0_0_40px_rgba(201,168,76,0.2)] w-full sm:w-auto justify-center"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Explore the Project
@@ -1301,7 +1303,7 @@ export default function App() {
                 <a
                   href="#contact"
                   onClick={(e) => handleNavClick(e, '#contact')}
-                  className="btn-luxury-ghost inline-flex items-center gap-3 rounded-full border border-[#C9A84C]/30 px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.35em] text-[#F5F0E8]"
+                  className="btn-luxury-ghost inline-flex items-center gap-3 rounded-full border border-[#C9A84C]/30 px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.35em] text-[#F5F0E8] w-full sm:w-auto justify-center"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Book Site Visit
@@ -1332,14 +1334,14 @@ export default function App() {
         <SectionDivider />
 
         {/* ══════════════ ABOUT ══════════════ */}
-        <section id="about" className="relative overflow-hidden bg-[#0D0D18] py-28 px-6 sm:px-8 lg:px-16">
+        <section id="about" className="relative overflow-hidden bg-[#0D0D18] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           {/* BG accent */}
           <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-[#C9A84C]/5 blur-[120px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-[#C9A84C]/4 blur-[100px] pointer-events-none" />
 
-          <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-2 items-center">
+          <div className="mx-auto grid max-w-7xl gap-10 sm:gap-16 lg:grid-cols-2 items-center">
             {/* Image */}
-            <div ref={aboutRef} className="relative rounded-2xl overflow-hidden glow-gold group h-[500px]">
+            <div ref={aboutRef} className="relative rounded-2xl overflow-hidden glow-gold group h-[320px] sm:h-[500px]">
               <RevealImage
                 src="/hotel-entry.jpg"
                 alt="Hotel architecture"
@@ -1368,7 +1370,7 @@ export default function App() {
                 <CinematicTitle
                   text="A premium mixed-use destination designed for a world-class lifestyle."
                   align="left"
-                  className="mt-8 text-5xl font-bold tracking-tight leading-[0.9] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+                  className="mt-6 sm:mt-8 text-3xl font-bold tracking-tight leading-[0.9] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 />
                 <GoldDivider />
@@ -1419,7 +1421,7 @@ export default function App() {
         <SectionDivider />
 
         {/* ══════════════ STATS ══════════════ */}
-        <section className="relative overflow-hidden bg-[#08080E] py-28 px-6 sm:px-8 lg:px-16">
+        <section className="relative overflow-hidden bg-[#08080E] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.06)_0%,transparent_70%)] pointer-events-none" />
 
           <div className="mx-auto max-w-7xl">
@@ -1428,7 +1430,7 @@ export default function App() {
               <CinematicTitle
                 text="Scale meets luxury at every corner."
                 align="center"
-                className="mt-8 text-5xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+                className="mt-6 sm:mt-8 text-3xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
                 style={{ fontFamily: "'Cinzel', serif" }}
               />
               <GoldDivider />
@@ -1442,7 +1444,7 @@ export default function App() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.7, delay: i * 0.08 }}
-                  className="luxury-card p-8 glow-gold-hover"
+                  className="luxury-card p-5 sm:p-8 glow-gold-hover"
                 >
                   <div className="mb-6 flex items-end gap-1">
                     <AnimatedCounter value={item.value} suffix={item.suffix} />
@@ -1491,7 +1493,7 @@ export default function App() {
           />
 
           {/* ── Content ── */}
-          <div className="relative px-6 sm:px-12 lg:px-16 py-28" style={{ zIndex: 10 }}>
+          <div className="relative px-4 sm:px-12 lg:px-16 py-16 sm:py-28" style={{ zIndex: 10 }}>
             <div className="mx-auto max-w-7xl">
 
               {/* Header */}
@@ -1500,7 +1502,7 @@ export default function App() {
                 <CinematicTitle
                   text="Curated luxury experiences for every visit."
                   align="left"
-                  className="mt-8 text-5xl font-bold tracking-tight leading-[0.9] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+                  className="mt-6 sm:mt-8 text-3xl font-bold tracking-tight leading-[0.9] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 />
                 <GoldDivider />
@@ -1517,7 +1519,7 @@ export default function App() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, margin: '-40px' }}
                     transition={{ duration: 0.7, delay: i * 0.1 }}
-                    className="group flex items-start gap-6 sm:gap-10 py-7 border-b border-[#C9A84C]/10 cursor-default"
+                    className="group flex items-start gap-3 sm:gap-10 py-5 sm:py-7 border-b border-[#C9A84C]/10 cursor-default"
                     style={{ borderTop: i === 0 ? '1px solid rgba(201,168,76,0.10)' : undefined }}
                   >
                     {/* Index number */}
@@ -1537,7 +1539,7 @@ export default function App() {
                           x: hoveredAmenity === i ? 8 : 0,
                         }}
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight flex-1"
+                        className="text-lg sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight flex-1"
                         style={{ fontFamily: "'Cinzel', serif" }}
                       >
                         {item.title}
@@ -1578,7 +1580,7 @@ export default function App() {
                         x: hoveredAmenity === i ? 0 : -8,
                       }}
                       transition={{ duration: 0.4 }}
-                      className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/40 bg-[#C9A84C]/10"
+                      className="flex-shrink-0 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/40 bg-[#C9A84C]/10"
                     >
                       <span className="text-[#C9A84C] text-sm">→</span>
                     </motion.div>
@@ -1599,7 +1601,7 @@ export default function App() {
         />
 
         {/* ══════════════ HOTEL ══════════════ */}
-        <section id="hotel" className="relative overflow-hidden bg-[#08080E] py-28 px-6 sm:px-8 lg:px-16">
+        <section id="hotel" className="relative overflow-hidden bg-[#08080E] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           {/* Full-bleed background */}
           <div ref={hotelRef} className="absolute inset-0 overflow-hidden">
             <motion.img
@@ -1613,11 +1615,11 @@ export default function App() {
           </div>
 
           <div className="relative mx-auto max-w-7xl">
-            <div className="grid gap-14 lg:grid-cols-[1.3fr_0.9fr] items-center">
+            <div className="grid gap-8 sm:gap-14 lg:grid-cols-[1.3fr_0.9fr] items-center">
               <RevealSection>
                 <span className="section-label">Hotel Experience</span>
                 <h2
-                  className="mt-6 text-5xl font-bold tracking-tight leading-[0.9] sm:text-6xl lg:text-7xl"
+                  className="mt-4 sm:mt-6 text-3xl font-bold tracking-tight leading-[0.9] sm:text-6xl lg:text-7xl"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Stay. Relax.<br />
@@ -1634,7 +1636,7 @@ export default function App() {
                 <a
                   href="#contact"
                   onClick={(e) => handleNavClick(e, '#contact')}
-                  className="btn-luxury-gold mt-10 inline-flex items-center gap-3 rounded-full px-8 py-4 text-[10px] font-bold uppercase tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.25)]"
+                  className="btn-luxury-gold mt-8 sm:mt-10 inline-flex items-center gap-3 rounded-full px-6 py-3 sm:px-8 sm:py-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.25)] w-full sm:w-auto justify-center"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   Experience It
@@ -1678,10 +1680,10 @@ export default function App() {
         <SectionDivider />
 
         {/* ══════════════ POOL FEATURE ══════════════ */}
-        <section className="relative overflow-hidden bg-[#0D0D18] py-28 px-6 sm:px-8 lg:px-16">
+        <section className="relative overflow-hidden bg-[#0D0D18] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           <div className="mx-auto max-w-7xl grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Image */}
-            <div ref={poolRef} className="relative rounded-2xl overflow-hidden group glow-gold h-[500px]">
+            <div ref={poolRef} className="relative rounded-2xl overflow-hidden group glow-gold h-[300px] sm:h-[500px]">
               <RevealImage
                 src="/pool-hero.jpg"
                 alt="Pool experience"
@@ -1711,7 +1713,7 @@ export default function App() {
                 <CinematicTitle
                   text="A resort-style pool with floating luxury."
                   align="left"
-                  className="mt-8 text-5xl font-bold tracking-tight leading-[0.9] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+                  className="mt-6 sm:mt-8 text-3xl font-bold tracking-tight leading-[0.9] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 />
                 <GoldDivider />
@@ -1760,28 +1762,28 @@ export default function App() {
         <SectionDivider />
 
         {/* ══════════════ GALLERY ══════════════ */}
-        <section id="gallery" className="relative overflow-hidden bg-[#08080E] py-28 px-6 sm:px-8 lg:px-16">
+        <section id="gallery" className="relative overflow-hidden bg-[#08080E] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-2/3 bg-gradient-to-r from-transparent via-[#C9A84C]/30 to-transparent" />
 
           <div className="mx-auto max-w-7xl">
-            <RevealSection className="text-center mb-24">
+            <RevealSection className="text-center mb-12 sm:mb-24">
               <span className="section-label">Gallery</span>
               <CinematicTitle
                 text="A premium visual story in every frame."
                 align="center"
-                className="mt-8 text-5xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+                className="mt-6 sm:mt-8 text-3xl sm:text-5xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
                 style={{ fontFamily: "'Cinzel', serif" }}
               />
               <GoldDivider />
             </RevealSection>
 
             {/* Category Filters */}
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
               {['All', 'Exterior', 'Interior', 'Amenities'].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveFilter(cat)}
-                  className={`relative px-6 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.25em] transition-all duration-300 ${
+                  className={`relative px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all duration-300 ${
                     activeFilter === cat
                       ? 'text-[#08080E] bg-[#C9A84C] shadow-[0_0_20px_rgba(201,168,76,0.3)] border border-[#C9A84C]'
                       : 'text-[#F5F0E8]/60 bg-[#C9A84C]/5 border border-[#C9A84C]/15 hover:border-[#C9A84C]/45 hover:text-[#C9A84C]'
@@ -1818,7 +1820,7 @@ export default function App() {
                       />
                       <div className="absolute inset-0 img-overlay-luxury opacity-60 group-hover:opacity-85 transition-opacity duration-500 z-10" />
                       {/* Label & Description */}
-                      <div className="absolute inset-x-0 bottom-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400 z-20">
+                      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 translate-y-0 sm:translate-y-2 opacity-100 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-400 z-20">
                         <p
                           className="text-[9px] font-semibold uppercase tracking-[0.35em] text-[#C9A84C] mb-1"
                           style={{ fontFamily: "'Cinzel', serif" }}
@@ -1833,7 +1835,7 @@ export default function App() {
                         </p>
                       </div>
                       {/* Corner icon */}
-                      <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#08080E]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-xl z-20">
+                      <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#08080E]/60 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-xl z-20">
                         <span className="text-[#C9A84C] text-xs">↗</span>
                       </div>
                     </motion.button>
@@ -1881,22 +1883,22 @@ export default function App() {
         <SectionDivider />
 
         {/* ══════════════ WHY CHOOSE US ══════════════ */}
-        <section className="relative overflow-hidden bg-[#0D0D18] py-28 px-6 sm:px-8 lg:px-16">
+        <section className="relative overflow-hidden bg-[#0D0D18] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(201,168,76,0.05)_0%,transparent_60%)] pointer-events-none" />
 
           <div className="mx-auto max-w-7xl">
-            <RevealSection className="text-center mb-24">
+            <RevealSection className="text-center mb-12 sm:mb-24">
               <span className="section-label">Why Choose Us</span>
               <CinematicTitle
                 text="A destination of unmatched luxury & connectivity."
                 align="center"
-                className="mt-8 text-5xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+                className="mt-6 sm:mt-8 text-3xl sm:text-5xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
                 style={{ fontFamily: "'Cinzel', serif" }}
               />
               <GoldDivider />
             </RevealSection>
 
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
               {whyChooseUs.map((item, i) => (
                 <motion.div
                   key={item.title}
@@ -1904,7 +1906,7 @@ export default function App() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.07 }}
-                  className="luxury-card p-7 group"
+                  className="luxury-card p-5 sm:p-7 group"
                 >
                   <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/25 bg-[#C9A84C]/8 text-[#C9A84C] text-xs transition-all duration-300 group-hover:border-[#C9A84C]/60 group-hover:bg-[#C9A84C]/15">
                     ✦
@@ -1924,7 +1926,7 @@ export default function App() {
         </section>
 
         {/* ══════════════ CTA BANNER ══════════════ */}
-        <section ref={ctaRef} className="relative overflow-hidden bg-[#08080E] py-28 px-6 sm:px-8 lg:px-16">
+        <section ref={ctaRef} className="relative overflow-hidden bg-[#08080E] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           <div className="absolute inset-0 overflow-hidden">
             <motion.img
               style={{ y: ctaY }}
@@ -1940,7 +1942,7 @@ export default function App() {
             <Star className="mx-auto mb-6 h-6 w-6 text-[#C9A84C] fill-current" />
             <span className="section-label">Ready to Experience Luxury?</span>
             <h2
-              className="mt-6 text-4xl font-bold tracking-tight leading-[1.1] text-[#F5F0E8] sm:text-5xl lg:text-6xl"
+              className="mt-4 sm:mt-6 text-2xl sm:text-4xl font-bold tracking-tight leading-[1.1] text-[#F5F0E8] sm:text-5xl lg:text-6xl"
               style={{ fontFamily: "'Cinzel', serif" }}
             >
               Book a Site Visit and witness the next level of{' '}
@@ -1948,7 +1950,7 @@ export default function App() {
             </h2>
             <GoldDivider />
             <p
-              className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-[#F5F0E8]/45"
+              className="mx-auto mt-3 sm:mt-4 max-w-2xl text-sm sm:text-lg leading-relaxed text-[#F5F0E8]/45"
               style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
             >
               This is not a standard property website. It is a world-class luxury destination built for premium hospitality and retail experiences.
@@ -1956,7 +1958,7 @@ export default function App() {
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, '#contact')}
-              className="btn-luxury-gold mt-10 inline-flex items-center gap-3 rounded-full px-12 py-4 text-[10px] font-bold uppercase tracking-[0.35em] shadow-[0_0_60px_rgba(201,168,76,0.3)] pulse-ring"
+              className="btn-luxury-gold mt-8 sm:mt-10 inline-flex items-center gap-3 rounded-full px-8 py-3.5 sm:px-12 sm:py-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.35em] shadow-[0_0_60px_rgba(201,168,76,0.3)] pulse-ring w-full sm:w-auto justify-center"
               style={{ fontFamily: "'Cinzel', serif" }}
             >
               Book a Site Visit
@@ -1966,28 +1968,28 @@ export default function App() {
         </section>
 
         {/* ══════════════ CONTACT ══════════════ */}
-        <section id="contact" className="relative overflow-hidden bg-[#0D0D18] py-28 px-6 sm:px-8 lg:px-16">
+        <section id="contact" className="relative overflow-hidden bg-[#0D0D18] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-[#C9A84C]/4 blur-[140px] pointer-events-none" />
 
-          <div className="mx-auto max-w-7xl grid gap-14 lg:grid-cols-[1fr_1.1fr] items-start">
+          <div className="mx-auto max-w-7xl grid gap-10 sm:gap-14 lg:grid-cols-[1fr_1.1fr] items-start">
             {/* Info side */}
             <RevealSection>
               <span className="section-label">Contact</span>
               <CinematicTitle
                 text="Connect with our concierge & booking team."
                 align="left"
-                className="mt-6 text-4xl font-bold tracking-tight text-[#F5F0E8] sm:text-5xl leading-[1.1]"
+                className="mt-4 sm:mt-6 text-2xl sm:text-4xl font-bold tracking-tight text-[#F5F0E8] sm:text-5xl leading-[1.1]"
                 style={{ fontFamily: "'Cinzel', serif" }}
               />
               <GoldDivider />
               <p
-                className="mt-4 max-w-xl text-lg leading-relaxed text-[#F5F0E8]/50"
+                className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-lg leading-relaxed text-[#F5F0E8]/50"
                 style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
               >
                 Share your requirements and our team will contact you with premium project details, layouts and site visit availability.
               </p>
 
-              <div className="mt-10 space-y-4">
+              <div className="mt-6 sm:mt-10 space-y-3 sm:space-y-4">
                 {[
                   { icon: Phone, label: 'Telephone', values: ['+91 95123 00392', '+91 95123 00397'] },
                   { icon: Mail,  label: 'Email',     values: ['contact@atmmall.in'] },
@@ -1999,7 +2001,7 @@ export default function App() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="glass-dark rounded-xl p-5 border border-[#C9A84C]/10 hover:border-[#C9A84C]/25 transition-colors duration-300"
+                    className="glass-dark rounded-xl p-4 sm:p-5 border border-[#C9A84C]/10 hover:border-[#C9A84C]/25 transition-colors duration-300"
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/25">
@@ -2024,7 +2026,7 @@ export default function App() {
 
             {/* Form */}
             <RevealSection delay={0.15}>
-              <div className="glass-dark rounded-2xl p-8 border border-[#C9A84C]/15 glow-gold">
+              <div className="glass-dark rounded-2xl p-5 sm:p-8 border border-[#C9A84C]/15 glow-gold">
                 {formSubmitted ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -2061,7 +2063,7 @@ export default function App() {
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
-                    <div className="mb-7">
+                    <div className="mb-5 sm:mb-7">
                       <h3
                         className="text-xl font-bold text-[#F5F0E8]"
                         style={{ fontFamily: "'Cinzel', serif" }}
@@ -2138,7 +2140,7 @@ export default function App() {
                     </label>
                     <button
                       type="submit"
-                      className="btn-luxury-gold w-full rounded-full px-6 py-4 text-[10px] font-bold uppercase tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.2)]"
+                      className="btn-luxury-gold w-full rounded-full px-6 py-3.5 sm:py-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.2)] justify-center"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
                       Submit Inquiry
@@ -2166,7 +2168,7 @@ export default function App() {
         <SectionDivider />
 
         {/* Hero statement block */}
-        <div className="relative mx-auto max-w-7xl px-6 sm:px-12 lg:px-16 pt-24 pb-20">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-12 lg:px-16 pt-16 sm:pt-24 pb-12 sm:pb-20">
 
           {/* Large logo + wordmark */}
           <motion.div
@@ -2174,7 +2176,7 @@ export default function App() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-16"
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-10 sm:mb-16"
           >
             <img
               src="/logo.jpg"
@@ -2197,7 +2199,7 @@ export default function App() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1.1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-5xl sm:text-7xl lg:text-[7rem] font-bold tracking-tight leading-[0.88] text-[#F5F0E8]/90 mb-8"
+            className="text-4xl sm:text-7xl lg:text-[7rem] font-bold tracking-tight leading-[0.88] text-[#F5F0E8]/90 mb-6 sm:mb-8"
             style={{ fontFamily: "'Cinzel', serif" }}
           >
             Luxury<br />
@@ -2209,7 +2211,7 @@ export default function App() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.25 }}
-            className="max-w-lg text-base sm:text-lg leading-relaxed text-[#F5F0E8]/35 mb-16"
+            className="max-w-lg text-sm sm:text-lg leading-relaxed text-[#F5F0E8]/35 mb-10 sm:mb-16"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
           >
             A world-class mixed-use address blending retail, hospitality, gardens
@@ -2222,7 +2224,7 @@ export default function App() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mb-24"
+            className="mb-12 sm:mb-24"
           >
             <p className="text-[9px] uppercase tracking-[0.4em] text-[#C9A84C] mb-4" style={{ fontFamily: "'Cinzel', serif" }}>
               Stay Informed
@@ -2236,7 +2238,7 @@ export default function App() {
               />
               <button
                 type="submit"
-                className="btn-luxury-gold rounded-full px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.25em] flex-shrink-0"
+                className="btn-luxury-gold rounded-full px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] flex-shrink-0 w-full sm:w-auto justify-center"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
                 Subscribe
@@ -2245,10 +2247,10 @@ export default function App() {
           </motion.div>
 
           {/* Elegant mid divider */}
-          <div className="gold-line mb-16" />
+          <div className="gold-line mb-10 sm:mb-16" />
 
           {/* 4-col footer grid */}
-          <div className="grid gap-14 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-10 sm:gap-14 sm:grid-cols-2 xl:grid-cols-4">
 
             {/* Navigate */}
             <motion.div
@@ -2369,8 +2371,8 @@ export default function App() {
         </div>
 
         {/* Bottom bar */}
-        <div className="relative border-t border-[#C9A84C]/8 px-6 sm:px-12 lg:px-16 py-8">
-          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative border-t border-[#C9A84C]/8 px-4 sm:px-12 lg:px-16 py-6 sm:py-8">
+          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
             <p className="text-[10px] text-[#F5F0E8]/18 tracking-widest uppercase" style={{ fontFamily: "'Cinzel', serif" }}>
               © 2026 ATM ILYF LLP. All rights reserved.
             </p>
