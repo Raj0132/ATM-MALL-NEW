@@ -26,12 +26,12 @@ const highlights = [
 const amenities = [
   { image: '/pool-top.jpg',        title: 'Infinity Pool',      tag: 'Resort Living',    description: 'Resort-style poolside cabanas and cinematic water features.', detail: 'Temperature-controlled pool, luxury cabanas, poolside bar' },
   { image: '/development-view.jpg',title: 'Landscape Gardens',  tag: 'Nature & Calm',    description: 'Immersive outdoor gardens, promenades and curated green courts.', detail: 'Zen paths, water pavilions, botanical walk, outdoor firepits' },
-  { image: '/mall-entry.jpg',      title: 'Grand Hotel',        tag: 'Hospitality',      description: 'A reception experience designed for refined arrivals and exclusive hospitality.', detail: 'Double-height lobby, executive desk, private entry ports' },
-  { image: '/skyline-view.jpg',    title: 'Luxury Arrival',     tag: 'Premium Entry',    description: 'Valet courts, arrival lounges and elevated guest entry sequences.', detail: 'Valet parking court, smart security, lounge seating' },
+  { image: '/hotel-entry.jpg',     title: 'Grand Hotel',        tag: 'Hospitality',      description: 'A reception experience designed for refined arrivals and exclusive hospitality.', detail: 'Double-height lobby, executive desk, private entry ports' },
+  { image: '/hyatt-view.jpg',      title: 'Luxury Arrival',     tag: 'Premium Entry',    description: 'Valet courts, arrival lounges and elevated guest entry sequences.', detail: 'Valet parking court, smart security, lounge seating' },
   { image: '/food-market.jpg',     title: 'Fine Dining',        tag: 'Gastronomy',       description: 'Destination restaurants with premium menus, elegant atmosphere and view terraces.', detail: 'Al fresco terraces, global cuisine, private dining rooms' },
-  { image: '/play-area.jpg',       title: 'Business Lounge',    tag: 'Executive',        description: 'Executive lounges curated for meetings, work and hospitality comfort.', detail: 'High-speed fiber, meeting suites, video ports, concierge desk' },
-  { image: '/hotel-entry.jpg',     title: 'Outdoor Terraces',   tag: 'Al Fresco',        description: 'Private outdoor terraces, dining courts and lounge decks in landscaped settings.', detail: 'Roof decks, firepits, cocktail seating, al fresco bar' },
-  { image: '/hyatt-view.jpg',      title: 'Family Spaces',      tag: 'Family',           description: 'A luxury family destination featuring thoughtfully designed play zones.', detail: 'Kids club, activity courts, shaded playgrounds, parent lounges' },
+  { image: '/skyline-view.jpg',    title: 'Business Lounge',    tag: 'Executive',        description: 'Executive lounges curated for meetings, work and hospitality comfort.', detail: 'High-speed fiber, meeting suites, video ports, concierge desk' },
+  { image: '/hero-lawn.jpg',       title: 'Outdoor Terraces',   tag: 'Al Fresco',        description: 'Private outdoor terraces, dining courts and lounge decks in landscaped settings.', detail: 'Roof decks, firepits, cocktail seating, al fresco bar' },
+  { image: '/play-area.jpg',       title: 'Family Spaces',      tag: 'Family',           description: 'A luxury family destination featuring thoughtfully designed play zones.', detail: 'Kids club, activity courts, shaded playgrounds, parent lounges' },
 ];
 
 const galleryItems = [
@@ -1107,7 +1107,7 @@ export default function App() {
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="relative flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-[#C9A84C]/20 bg-[#C9A84C]/5 transition-all duration-300 hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/10 lg:hidden"
+              className="relative z-[60] flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-[#C9A84C]/20 bg-[#C9A84C]/5 transition-all duration-300 hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/10 lg:hidden"
             >
               <span className={`block h-px w-5 bg-[#C9A84C] transition-all duration-300 ${menuOpen ? 'translate-y-[5px] rotate-45' : ''}`} />
               <span className={`block h-px w-5 bg-[#C9A84C] transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
@@ -1124,9 +1124,9 @@ export default function App() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -16, scale: 0.97 }}
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="fixed inset-0 top-0 z-50 rounded-none sm:rounded-2xl sm:inset-x-4 sm:top-16 sm:inset-y-auto nav-menu-mobile p-6 shadow-[0_40px_120px_rgba(0,0,0,0.8)] lg:hidden flex flex-col justify-center items-center sm:block"
+              className="fixed inset-0 z-50 bg-[#08080E]/98 backdrop-blur-[30px] border-b border-[#C9A84C]/15 p-8 shadow-[0_40px_120px_rgba(0,0,0,0.9)] lg:hidden flex flex-col justify-center items-center gap-6 sm:inset-x-4 sm:top-20 sm:bottom-auto sm:h-auto sm:rounded-2xl sm:py-8 sm:px-12 sm:items-start sm:border sm:border-[#C9A84C]/15"
             >
-              <div className="flex flex-col gap-6 sm:gap-6 items-center sm:items-start w-full">
+              <div className="flex flex-col gap-5 items-center sm:items-start w-full">
                 {navLinks.map((link, i) => {
                   const isActive = activeSection === link.href.substring(1);
                   return (
@@ -1140,7 +1140,7 @@ export default function App() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className={`text-2xl sm:text-lg font-semibold uppercase tracking-[0.2em] transition ${
+                      className={`text-xl sm:text-base font-semibold uppercase tracking-[0.2em] transition ${
                         isActive ? 'text-[#C9A84C]' : 'text-[#F5F0E8]/70 hover:text-[#C9A84C]'
                       }`}
                       style={{ fontFamily: "'Cinzel', serif" }}
@@ -1149,7 +1149,7 @@ export default function App() {
                     </motion.a>
                   );
                 })}
-                <div className="gold-line my-2" />
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent my-1 sm:my-2 w-16" />
                 <a
                   href="#contact"
                   onClick={(e) => {
