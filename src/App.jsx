@@ -69,7 +69,7 @@ function AnimatedCounter({ value, suffix }) {
   }, [isInView, num]);
 
   return (
-    <span ref={ref} className="stat-number text-5xl sm:text-6xl font-bold leading-none">
+    <span ref={ref} className="text-5xl font-bold leading-none stat-number sm:text-6xl">
       {display}{suffix}
     </span>
   );
@@ -200,7 +200,7 @@ function AmbientBackground() {
   if (isTouchDevice) return null;
 
   return (
-    <div aria-hidden className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+    <div aria-hidden className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
       {/* Tiny drifting particles */}
       {AMBIENT_PARTICLES.map((p) => (
         <div
@@ -235,7 +235,7 @@ function AmbientBackground() {
 
       {/* Static soft gradient vignette — bottom centre glow */}
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2"
+        className="absolute bottom-0 -translate-x-1/2 left-1/2"
         style={{
           width: '60vw',
           height: '35vh',
@@ -254,7 +254,7 @@ function GoldDivider() {
   return (
     <div className="ornament-divider">
       <div className="ornament-diamond" />
-      <div className="ornament-diamond opacity-40 scale-75" />
+      <div className="scale-75 ornament-diamond opacity-40" />
       <div className="ornament-diamond" />
     </div>
   );
@@ -323,7 +323,7 @@ function TimelineStep({ step, index, total, isHovered, onHover, onLeave, onClick
         {/* Top connector */}
         {index > 0 && (
           <div
-            className="w-px flex-shrink-0"
+            className="flex-shrink-0 w-px"
             style={{
               height: 20,
               background: 'linear-gradient(to bottom, rgba(201,168,76,0.35), rgba(201,168,76,0.10))',
@@ -341,7 +341,7 @@ function TimelineStep({ step, index, total, isHovered, onHover, onLeave, onClick
             backgroundColor: isHovered ? 'rgba(201,168,76,0.12)' : 'rgba(8,8,14,1)',
           }}
           transition={{ duration: 0.4 }}
-          className="flex items-center justify-center rounded-full border flex-shrink-0"
+          className="flex items-center justify-center flex-shrink-0 border rounded-full"
           style={{ width: 40, height: 40 }}
         >
           <motion.span
@@ -356,7 +356,7 @@ function TimelineStep({ step, index, total, isHovered, onHover, onLeave, onClick
         {/* Bottom connector */}
         {!isLast && (
           <div
-            className="w-px flex-1"
+            className="flex-1 w-px"
             style={{
               minHeight: 20,
               background: 'linear-gradient(to bottom, rgba(201,168,76,0.10), rgba(201,168,76,0.04))',
@@ -366,7 +366,7 @@ function TimelineStep({ step, index, total, isHovered, onHover, onLeave, onClick
       </div>
 
       {/* ── Content ── */}
-      <div className="flex-1 pl-6 py-3 overflow-hidden">
+      <div className="flex-1 py-3 pl-6 overflow-hidden">
 
         {/* Always-visible collapsed row */}
         <div className="flex items-center gap-4">
@@ -386,7 +386,7 @@ function TimelineStep({ step, index, total, isHovered, onHover, onLeave, onClick
               x: isHovered ? 4 : 0,
             }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="text-2xl sm:text-3xl font-bold tracking-tight leading-none flex-1"
+            className="flex-1 text-2xl font-bold leading-none tracking-tight sm:text-3xl"
             style={{ fontFamily: "'Cinzel', serif" }}
           >
             {step.word}
@@ -476,7 +476,7 @@ function LuxuryTimeline() {
         <RevealSection>
           <button
             onClick={() => setIsOpen((v) => !v)}
-            className="group w-full text-left focus:outline-none"
+            className="w-full text-left group focus:outline-none"
             aria-expanded={isOpen}
           >
             <div className="flex items-end justify-between gap-6">
@@ -571,7 +571,7 @@ function LuxuryTimeline() {
                   className="mt-10 flex items-center gap-3 text-[9px] uppercase tracking-[0.4em] text-[#F5F0E8]/25 hover:text-[#C9A84C] transition-colors duration-300 group"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
-                  <span className="h-px w-8 bg-current transition-all duration-300 group-hover:w-12" />
+                  <span className="w-8 h-px transition-all duration-300 bg-current group-hover:w-12" />
                   Collapse Journey
                   <motion.span
                     animate={{ rotate: 180 }}
@@ -596,7 +596,7 @@ function LuxuryTimeline() {
 ───────────────────────────────────────────────────── */
 function SectionDivider() {
   return (
-    <div className="relative flex items-center justify-center py-0 px-6 sm:px-16 overflow-hidden">
+    <div className="relative flex items-center justify-center px-6 py-0 overflow-hidden sm:px-16">
       {/* Left arm */}
       <motion.div
         initial={{ scaleX: 0, originX: 1 }}
@@ -616,7 +616,7 @@ function SectionDivider() {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.5, delay: 0.6, ease: "backOut" }}
-        className="mx-3 flex-shrink-0"
+        className="flex-shrink-0 mx-3"
       >
         <div className="w-[7px] h-[7px] rotate-45 bg-[#C9A84C] shadow-[0_0_10px_rgba(201,168,76,0.7),0_0_24px_rgba(201,168,76,0.3)]" />
       </motion.div>
@@ -663,7 +663,7 @@ function BreathingSpace({ image, title, subtitle }) {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center px-6">
+      <div className="relative z-10 px-6 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -801,7 +801,7 @@ function CinematicTransitionOverlay({ stage }) {
 
   return (
     <div
-      className="fixed inset-0 pointer-events-auto overflow-hidden"
+      className="fixed inset-0 overflow-hidden pointer-events-auto"
       style={{ zIndex: 99999 }}
     >
       {/* Black curtain */}
@@ -974,7 +974,7 @@ export default function App() {
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#08080E]"
           >
-            <div className="text-center flex flex-col items-center">
+            <div className="flex flex-col items-center text-center">
               <motion.img
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -1034,7 +1034,7 @@ export default function App() {
             : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-5 lg:px-12">
+        <div className="flex items-center justify-between px-4 py-3 mx-auto max-w-7xl sm:px-6 sm:py-5 lg:px-12">
           {/* Logo */}
           <a
             href="#home"
@@ -1063,7 +1063,7 @@ export default function App() {
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav className="items-center hidden gap-8 lg:flex">
             {navLinks.map((link) => {
               const isActive = activeSection === link.href.substring(1);
               return (
@@ -1125,7 +1125,7 @@ export default function App() {
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="fixed inset-0 z-50 bg-[#08080E]/98 backdrop-blur-[30px] border-b border-[#C9A84C]/15 p-8 shadow-[0_40px_120px_rgba(0,0,0,0.9)] lg:hidden flex flex-col justify-center items-center gap-6 sm:inset-x-4 sm:top-20 sm:bottom-auto sm:h-auto sm:rounded-2xl sm:py-8 sm:px-12 sm:items-start sm:border sm:border-[#C9A84C]/15"
             >
-              <div className="flex flex-col gap-5 items-center sm:items-start w-full">
+              <div className="flex flex-col items-center w-full gap-5 sm:items-start">
                 {navLinks.map((link, i) => {
                   const isActive = activeSection === link.href.substring(1);
                   return (
@@ -1203,7 +1203,7 @@ export default function App() {
           {/* Content */}
           <motion.div
             style={{ opacity: heroOpacity }}
-            className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-4 py-20 sm:px-5 sm:py-28 text-center"
+            className="relative z-10 flex flex-col items-center justify-center max-w-6xl min-h-screen px-4 py-20 mx-auto text-center sm:px-5 sm:py-28"
           >
             <div>
               {/* Pre-label */}
@@ -1224,7 +1224,7 @@ export default function App() {
               </motion.div>
 
               {/* Main headline - Line 1 */}
-              <div className="overflow-hidden mb-4">
+              <div className="mb-4 overflow-hidden">
                 <motion.h1
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
@@ -1237,7 +1237,7 @@ export default function App() {
               </div>
 
               {/* Main headline - Line 2 */}
-              <div className="overflow-hidden mb-6">
+              <div className="mb-6 overflow-hidden">
                 <motion.h1
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
@@ -1250,7 +1250,7 @@ export default function App() {
               </div>
 
               {/* Main headline - Line 3 */}
-              <div className="overflow-hidden mb-8">
+              <div className="mb-8 overflow-hidden">
                 <motion.h1
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
@@ -1267,7 +1267,7 @@ export default function App() {
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 transition={{ duration: 0.8, delay: 0.75 }}
-                className="mx-auto mb-6 sm:mb-8 w-40 sm:w-64"
+                className="w-40 mx-auto mb-6 sm:mb-8 sm:w-64"
               >
                 <GoldDivider />
               </motion.div>
@@ -1288,7 +1288,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 1.05, ease: "easeOut" }}
-                className="flex flex-col items-center justify-center gap-3 sm:gap-4 sm:flex-row w-full sm:w-auto"
+                className="flex flex-col items-center justify-center w-full gap-3 sm:gap-4 sm:flex-row sm:w-auto"
               >
                 <a
                   href="#amenities"
@@ -1315,7 +1315,7 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.4 }}
-              className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+              className="absolute flex flex-col items-center gap-2 -translate-x-1/2 bottom-10 left-1/2"
             >
               <span
                 className="text-[8px] tracking-[0.3em] text-[#C9A84C]/60 uppercase whitespace-nowrap"
@@ -1335,7 +1335,7 @@ export default function App() {
         {/* ══════════════ AT A GLANCE ══════════════ */}
         <section className="relative overflow-hidden bg-[#0D0D18] py-8 sm:py-10 px-4 sm:px-8 lg:px-16">
           <div className="mx-auto max-w-7xl">
-            <div className="mb-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+            <div className="flex flex-col items-center gap-3 mb-6 sm:flex-row sm:justify-between">
               <span className="section-label">At a glance</span>
               <p className="hidden text-sm tracking-[0.03em] text-[#F5F0E8]/60 sm:block">Key project strengths in one quick view.</p>
             </div>
@@ -1343,25 +1343,25 @@ export default function App() {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
-                  <Star className="h-5 w-5" />
+                  <Star className="w-5 h-5" />
                 </div>
                 <span className="font-semibold text-[#F5F0E8]">5-Star Hotel</span>
               </div>
               <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
-                  <ShoppingBag className="h-5 w-5" />
+                  <ShoppingBag className="w-5 h-5" />
                 </div>
                 <span className="font-semibold text-[#F5F0E8]">150+ Retail Stores</span>
               </div>
               <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
-                  <MapPin className="h-5 w-5" />
+                  <MapPin className="w-5 h-5" />
                 </div>
                 <span className="font-semibold text-[#F5F0E8]">Prime Chandkheda</span>
               </div>
               <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
-                  <ShieldCheck className="h-5 w-5" />
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
                 <span className="font-semibold text-[#F5F0E8]">RERA Registered</span>
               </div>
@@ -1377,7 +1377,7 @@ export default function App() {
           <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-[#C9A84C]/5 blur-[120px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-[#C9A84C]/4 blur-[100px] pointer-events-none" />
 
-          <div className="mx-auto grid max-w-7xl gap-10 sm:gap-16 lg:grid-cols-2 items-center">
+          <div className="grid items-center gap-10 mx-auto max-w-7xl sm:gap-16 lg:grid-cols-2">
             {/* Image */}
             <div ref={aboutRef} className="relative rounded-2xl overflow-hidden glow-gold group h-[320px] sm:h-[500px]">
               <RevealImage
@@ -1386,12 +1386,12 @@ export default function App() {
                 parallaxY={aboutY}
                 heightClass="h-full"
               />
-              <div className="absolute inset-0 img-overlay-luxury z-10" />
+              <div className="absolute inset-0 z-10 img-overlay-luxury" />
               {/* Corner ornament */}
               <div className="absolute top-5 right-5 flex h-14 w-14 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#08080E]/60 backdrop-blur-xl z-20">
                 <Star className="h-5 w-5 text-[#C9A84C] fill-current" />
               </div>
-              <div className="absolute bottom-8 left-8 right-8 z-20">
+              <div className="absolute z-20 bottom-8 left-8 right-8">
                 <p
                   className="text-2xl font-medium text-[#F5F0E8] leading-snug"
                   style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
@@ -1444,7 +1444,7 @@ export default function App() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: i * 0.08 }}
-                      className="glass-dark rounded-xl p-5 glow-gold-hover"
+                      className="p-5 glass-dark rounded-xl glow-gold-hover"
                     >
                       <div className="mb-3 text-[#C9A84C]">✦</div>
                       <h3
@@ -1480,7 +1480,7 @@ export default function App() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.06)_0%,transparent_70%)] pointer-events-none" />
 
           <div className="mx-auto max-w-7xl">
-            <RevealSection className="text-center mb-24">
+            <RevealSection className="mb-24 text-center">
               <span className="section-label">Project Highlights</span>
               <CinematicTitle
                 text="Scale meets luxury at every corner."
@@ -1499,9 +1499,9 @@ export default function App() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.7, delay: i * 0.08 }}
-                  className="luxury-card p-5 sm:p-8 glow-gold-hover"
+                  className="p-5 luxury-card sm:p-8 glow-gold-hover"
                 >
-                  <div className="mb-6 flex items-end gap-1">
+                  <div className="flex items-end gap-1 mb-6">
                     <AnimatedCounter value={item.value} suffix={item.suffix} />
                   </div>
                   <h3
@@ -1520,22 +1520,22 @@ export default function App() {
 
         {/* ══════════════ AMENITIES ══════════════ */}
         <section id="amenities" className="relative overflow-hidden bg-[#08080E]">
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <img
               src="/pool-top.jpg"
               alt="Amenity background"
-              className="absolute left-0 top-0 h-full w-full object-cover opacity-15"
+              className="absolute top-0 left-0 object-cover w-full h-full opacity-15"
             />
             <img
               src="/development-view.jpg"
               alt="Amenity background"
-              className="absolute right-0 top-0 h-full w-full object-cover opacity-10"
+              className="absolute top-0 right-0 object-cover w-full h-full opacity-10"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-[#08080E]/95 via-[#08080E]/70 to-[#08080E]/95" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/80 via-transparent to-[#08080E]/95" />
           </div>
 
-          <div className="relative px-4 sm:px-12 lg:px-16 py-16 sm:py-28 z-10">
+          <div className="relative z-10 px-4 py-16 sm:px-12 lg:px-16 sm:py-28">
             <div className="mx-auto max-w-7xl">
               <RevealSection className="mb-12">
                 <span className="section-label">Amenities</span>
@@ -1564,18 +1564,18 @@ export default function App() {
                     transition={{ duration: 0.6, delay: i * 0.05 }}
                     className="amenity-card glass-dark rounded-3xl border border-[#C9A84C]/15 p-5 flex items-start gap-4 overflow-hidden relative group"
                   >
-                    <div className="amenity-card-bg absolute inset-0 opacity-0 pointer-events-none">
+                    <div className="absolute inset-0 opacity-0 pointer-events-none amenity-card-bg">
                       <img
                         src={item.image}
                         alt={item.title}
                         loading="lazy"
-                        className="h-full w-full object-cover"
+                        className="object-cover w-full h-full"
                       />
                       <div className="amenity-card-dimmer absolute inset-0 bg-gradient-to-b from-[#08080E]/10 via-[#08080E]/65 to-[#08080E]/95" />
                     </div>
 
                     <div className="mt-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C] z-10">
-                      <Star className="h-5 w-5" />
+                      <Star className="w-5 h-5" />
                     </div>
                     <div className="relative z-10">
                       <h3
@@ -1694,7 +1694,7 @@ export default function App() {
                 parallaxY={poolY}
                 heightClass="h-full"
               />
-              <div className="absolute inset-0 img-overlay-luxury z-10" />
+              <div className="absolute inset-0 z-10 img-overlay-luxury" />
               {/* Floating badge */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
@@ -1770,7 +1770,7 @@ export default function App() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-2/3 bg-gradient-to-r from-transparent via-[#C9A84C]/30 to-transparent" />
 
           <div className="mx-auto max-w-7xl">
-            <RevealSection className="text-center mb-12 sm:mb-24">
+            <RevealSection className="mb-12 text-center sm:mb-24">
               <span className="section-label">Gallery</span>
               <CinematicTitle
                 text="A premium visual story in every frame."
@@ -1782,7 +1782,7 @@ export default function App() {
             </RevealSection>
 
             {/* Category Filters */}
-            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+            <div className="flex flex-wrap justify-center gap-3 mb-8 sm:gap-4 sm:mb-12">
               {['All', 'Exterior', 'Interior', 'Amenities'].map((cat) => (
                 <button
                   key={cat}
@@ -1822,9 +1822,9 @@ export default function App() {
                         heightClass="h-full"
                         className="absolute inset-0"
                       />
-                      <div className="absolute inset-0 img-overlay-luxury opacity-60 group-hover:opacity-85 transition-opacity duration-500 z-10" />
+                      <div className="absolute inset-0 z-10 transition-opacity duration-500 img-overlay-luxury opacity-60 group-hover:opacity-85" />
                       {/* Label & Description */}
-                      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 translate-y-0 sm:translate-y-2 opacity-100 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-400 z-20">
+                      <div className="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-0 opacity-100 sm:p-5 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 duration-400">
                         <p
                           className="text-[9px] font-semibold uppercase tracking-[0.35em] text-[#C9A84C] mb-1"
                           style={{ fontFamily: "'Cinzel', serif" }}
@@ -1862,7 +1862,7 @@ export default function App() {
                   onClick={() => setSelectedImage(null)}
                   className="absolute right-6 top-6 flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/10 text-[#C9A84C] transition hover:bg-[#C9A84C]/20"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="w-4 h-4" />
                 </button>
                 <motion.img
                   src={selectedImage}
@@ -1899,7 +1899,7 @@ export default function App() {
           </div>
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.1)_0%,transparent_65%)] pointer-events-none" />
 
-          <RevealSection className="relative mx-auto max-w-5xl text-center">
+          <RevealSection className="relative max-w-5xl mx-auto text-center">
             <Star className="mx-auto mb-6 h-6 w-6 text-[#C9A84C] fill-current" />
             <span className="section-label">Ready to Experience Luxury?</span>
             <h2
@@ -1950,7 +1950,7 @@ export default function App() {
                 Share your requirements and our team will contact you with premium project details, layouts and site visit availability.
               </p>
 
-              <div className="mt-6 sm:mt-10 space-y-3 sm:space-y-4">
+              <div className="mt-6 space-y-3 sm:mt-10 sm:space-y-4">
                 {[
                   { icon: Phone, label: 'Telephone', values: ['+91 95123 00392', '+91 95123 00397'] },
                   { icon: Mail,  label: 'Email',     values: ['contact@atmmall.in'] },
@@ -1992,7 +1992,7 @@ export default function App() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-16 text-center space-y-6"
+                    className="flex flex-col items-center justify-center py-16 space-y-6 text-center"
                   >
                     <motion.div
                       initial={{ scale: 0 }}
@@ -2095,7 +2095,7 @@ export default function App() {
                         onChange={(e) => setFormValues({ ...formValues, message: e.target.value })}
                         rows={4}
                         required
-                        className="luxury-input resize-none"
+                        className="resize-none luxury-input"
                         placeholder="Tell us about your luxury retail or hotel requirements."
                       />
                     </label>
@@ -2129,7 +2129,7 @@ export default function App() {
         <SectionDivider />
 
         {/* Hero statement block */}
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-12 lg:px-16 pt-16 sm:pt-24 pb-12 sm:pb-20">
+        <div className="relative px-4 pt-16 pb-12 mx-auto max-w-7xl sm:px-12 lg:px-16 sm:pt-24 sm:pb-20">
 
           {/* Large logo + wordmark */}
           <motion.div
@@ -2137,14 +2137,14 @@ export default function App() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-10 sm:mb-16"
+            className="flex flex-col items-start gap-4 mb-10 sm:flex-row sm:items-center sm:gap-6 sm:mb-16"
           >
             <img
               src="/logo.jpg"
               alt="ATM Mall"
               className="h-20 w-20 rounded-2xl object-cover border border-[#C9A84C]/30 shadow-[0_0_40px_rgba(201,168,76,0.18)]"
             />
-            <div className="flex flex-col leading-none gap-2">
+            <div className="flex flex-col gap-2 leading-none">
               <span className="text-3xl font-bold uppercase tracking-[0.35em] text-[#F5F0E8]" style={{ fontFamily: "'Cinzel', serif" }}>
                 ATM MALL
               </span>
@@ -2190,7 +2190,7 @@ export default function App() {
             <p className="text-[9px] uppercase tracking-[0.4em] text-[#C9A84C] mb-4" style={{ fontFamily: "'Cinzel', serif" }}>
               Stay Informed
             </p>
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3 max-w-md">
+            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col max-w-md gap-3 sm:flex-row">
               <input
                 type="email"
                 placeholder="Your email address"
@@ -2208,7 +2208,7 @@ export default function App() {
           </motion.div>
 
           {/* Elegant mid divider */}
-          <div className="gold-line mb-10 sm:mb-16" />
+          <div className="mb-10 gold-line sm:mb-16" />
 
           {/* 4-col footer grid */}
           <div className="grid gap-10 sm:gap-14 sm:grid-cols-2 xl:grid-cols-4">
@@ -2316,7 +2316,7 @@ export default function App() {
                     >
                       {s.label[0]}
                     </span>
-                    <div className="flex flex-col leading-none gap-1">
+                    <div className="flex flex-col gap-1 leading-none">
                       <span className="text-[9px] uppercase tracking-[0.25em] text-[#C9A84C]/40 group-hover:text-[#C9A84C]/75 transition-colors duration-300" style={{ fontFamily: "'Cinzel', serif" }}>
                         {s.label}
                       </span>
@@ -2333,16 +2333,16 @@ export default function App() {
 
         {/* Bottom bar */}
         <div className="relative border-t border-[#C9A84C]/8 px-4 sm:px-12 lg:px-16 py-6 sm:py-8">
-          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
+          <div className="flex flex-col items-center justify-between gap-3 mx-auto text-center max-w-7xl sm:flex-row sm:gap-4 sm:text-left">
             <p className="text-[10px] text-[#F5F0E8]/18 tracking-widest uppercase" style={{ fontFamily: "'Cinzel', serif" }}>
               © 2026 ATM ILYF LLP. All rights reserved.
             </p>
             <div className="flex items-center gap-3">
-              <div className="ornament-diamond scale-50 opacity-25" />
+              <div className="scale-50 opacity-25 ornament-diamond" />
               <span className="text-[9px] text-[#C9A84C]/35 tracking-[0.35em] uppercase" style={{ fontFamily: "'Cinzel', serif" }}>
                 Ahmedabad · Gujarat · India
               </span>
-              <div className="ornament-diamond scale-50 opacity-25" />
+              <div className="scale-50 opacity-25 ornament-diamond" />
             </div>
             <p className="text-[10px] text-[#F5F0E8]/15 tracking-widest uppercase" style={{ fontFamily: "'Cinzel', serif" }}>
               Redefining Luxury Living
@@ -2352,7 +2352,7 @@ export default function App() {
       </footer>
 
       {/* Floating CTA */}
-      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40">
+      <div className="fixed z-40 bottom-6 right-6 md:bottom-8 md:right-8">
         <button
           onClick={() => {
             setBrochureSubmitted(false);
@@ -2409,10 +2409,10 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-center py-6"
+                  className="py-6 text-center"
                 >
                   <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/10 text-[#C9A84C] shadow-[0_0_20px_rgba(201,168,76,0.15)]">
-                    <FileDown className="h-6 w-6" />
+                    <FileDown className="w-6 h-6" />
                   </div>
                   <h3
                     className="text-2xl font-bold text-[#F5F0E8] mb-3"
