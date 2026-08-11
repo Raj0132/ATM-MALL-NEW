@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu, FileDown, ShieldCheck, ShoppingBag } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────
    DATA
@@ -43,17 +43,6 @@ const galleryItems = [
   { src: '/food-market.jpg',      cls: '',         label: 'Fine Dining',    category: 'Amenities', desc: 'Al fresco food galleries and destination restaurants.' },
   { src: '/skyline-view.jpg',     cls: '',         label: 'Skyline',        category: 'Exterior',  desc: 'Panoramic rooftop sky lounge views of the city.' },
   { src: '/hyatt-view.jpg',       cls: '',         label: 'Hyatt Wing',     category: 'Interior',  desc: 'Dual five-star luxury suites and hospitality tower.' },
-];
-
-const whyChooseUs = [
-  { icon: '✦', title: 'Premium Architecture',   detail: 'A landmark form and sculptural identity shaped for world-class appeal.' },
-  { icon: '✦', title: 'Luxury Hospitality',     detail: 'Hospitality levels and suites designed for discerning guests.' },
-  { icon: '✦', title: 'Smart Security',         detail: 'Advanced access systems and a concierge-led guest experience.' },
-  { icon: '✦', title: 'Landscape Design',       detail: 'Curated gardens, terraces and outdoor courts for quiet luxury.' },
-  { icon: '✦', title: 'Prime Connectivity',     detail: 'Direct access to highways, metro, airport and business districts.' },
-  { icon: '✦', title: 'Premium Amenities',      detail: 'Pool, dining, lounge, retail and entertainment in one address.' },
-  { icon: '✦', title: 'Business Friendly',      detail: 'Executive spaces, meeting suites and hospitality infrastructure.' },
-  { icon: '✦', title: 'Resort Lifestyle',       detail: 'A lifestyle environment that feels calm, cinematic and exclusive.' },
 ];
 
 /* ─────────────────────────────────────────────────────
@@ -872,8 +861,12 @@ export default function App() {
   const [scrolled,      setScrolled]      = useState(false);
   const [isLoading,     setIsLoading]     = useState(true);
   const [activeFilter,   setActiveFilter]   = useState('All');
-  const [hoveredAmenity, setHoveredAmenity] = useState(null);
   const [transitionStage, setTransitionStage] = useState('idle');
+
+  // Brochure modal states
+  const [brochureModalOpen, setBrochureModalOpen] = useState(false);
+  const [brochureFormValues, setBrochureFormValues] = useState({ fullName: '', email: '', phone: '' });
+  const [brochureSubmitted, setBrochureSubmitted] = useState(false);
 
   const handleNavClick = useCallback((e, href) => {
     e.preventDefault();
@@ -962,6 +955,12 @@ export default function App() {
     e.preventDefault();
     setFormSubmitted(true);
     setFormValues({ fullName: '', phone: '', email: '', message: '' });
+  };
+
+  const handleBrochureSubmit = (e) => {
+    e.preventDefault();
+    setBrochureSubmitted(true);
+    setBrochureFormValues({ fullName: '', email: '', phone: '' });
   };
 
   return (
@@ -1333,6 +1332,45 @@ export default function App() {
 
         <SectionDivider />
 
+        {/* ══════════════ AT A GLANCE ══════════════ */}
+        <section className="relative overflow-hidden bg-[#0D0D18] py-8 sm:py-10 px-4 sm:px-8 lg:px-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+              <span className="section-label">At a glance</span>
+              <p className="hidden text-sm tracking-[0.03em] text-[#F5F0E8]/60 sm:block">Key project strengths in one quick view.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
+                  <Star className="h-5 w-5" />
+                </div>
+                <span className="font-semibold text-[#F5F0E8]">5-Star Hotel</span>
+              </div>
+              <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
+                  <ShoppingBag className="h-5 w-5" />
+                </div>
+                <span className="font-semibold text-[#F5F0E8]">150+ Retail Stores</span>
+              </div>
+              <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <span className="font-semibold text-[#F5F0E8]">Prime Chandkheda</span>
+              </div>
+              <div className="glass-dark rounded-3xl border border-[#C9A84C]/15 px-4 py-4 flex items-center gap-3 text-sm sm:text-base">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C]">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <span className="font-semibold text-[#F5F0E8]">RERA Registered</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <SectionDivider />
+
         {/* ══════════════ ABOUT ══════════════ */}
         <section id="about" className="relative overflow-hidden bg-[#0D0D18] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
           {/* BG accent */}
@@ -1382,9 +1420,26 @@ export default function App() {
                 </p>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {['Luxury Hospitality', 'Fine Dining', 'Premium Outdoor Spaces', 'Business Facilities'].map((item, i) => (
+                  {[
+                    {
+                      title: 'Premium Architecture',
+                      description: 'A sculptural landmark tailored for timeless luxury and high-profile appeal.',
+                    },
+                    {
+                      title: 'Prime Connectivity',
+                      description: 'Direct access to highways, metro links, airport routes and business districts.',
+                    },
+                    {
+                      title: 'Smart Security',
+                      description: 'Concierge-led access control, surveillance and hospitality-grade safeguards.',
+                    },
+                    {
+                      title: 'Resort Lifestyle',
+                      description: 'Curated gardens, pools, dining and lounge spaces for immersive hospitality.',
+                    },
+                  ].map((item, i) => (
                     <motion.div
-                      key={item}
+                      key={item.title}
                       initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
@@ -1396,10 +1451,10 @@ export default function App() {
                         className="text-sm font-semibold text-[#F5F0E8] mb-2 tracking-wide"
                         style={{ fontFamily: "'Cinzel', serif" }}
                       >
-                        {item}
+                        {item.title}
                       </h3>
                       <p className="text-xs leading-relaxed text-[#F5F0E8]/40">
-                        A refined experience designed for the discerning guest and premium investor.
+                        {item.description}
                       </p>
                     </motion.div>
                   ))}
@@ -1464,40 +1519,25 @@ export default function App() {
         </section>
 
         {/* ══════════════ AMENITIES ══════════════ */}
-        <section id="amenities" className="relative overflow-hidden bg-[#08080E]" style={{ minHeight: '100vh' }}>
+        <section id="amenities" className="relative overflow-hidden bg-[#08080E]">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <img
+              src="/pool-top.jpg"
+              alt="Amenity background"
+              className="absolute left-0 top-0 h-full w-full object-cover opacity-15"
+            />
+            <img
+              src="/development-view.jpg"
+              alt="Amenity background"
+              className="absolute right-0 top-0 h-full w-full object-cover opacity-10"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#08080E]/95 via-[#08080E]/70 to-[#08080E]/95" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/80 via-transparent to-[#08080E]/95" />
+          </div>
 
-          {/* ── Full-bleed background images (one per amenity) ── */}
-          {amenities.map((item, i) => (
-            <motion.div
-              key={item.title + '-bg'}
-              animate={{ opacity: hoveredAmenity === i ? 1 : 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 pointer-events-none"
-              style={{ zIndex: 1 }}
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ willChange: 'opacity' }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#08080E] via-[#08080E]/75 to-[#08080E]/30" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/60 via-transparent to-[#08080E]/40" />
-            </motion.div>
-          ))}
-
-          {/* Default dark gradient when nothing hovered */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ zIndex: 0, background: 'radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.04) 0%, transparent 60%)' }}
-          />
-
-          {/* ── Content ── */}
-          <div className="relative px-4 sm:px-12 lg:px-16 py-16 sm:py-28" style={{ zIndex: 10 }}>
+          <div className="relative px-4 sm:px-12 lg:px-16 py-16 sm:py-28 z-10">
             <div className="mx-auto max-w-7xl">
-
-              {/* Header */}
-              <RevealSection className="mb-20">
+              <RevealSection className="mb-12">
                 <span className="section-label">Amenities</span>
                 <CinematicTitle
                   text="Curated luxury experiences for every visit."
@@ -1506,84 +1546,48 @@ export default function App() {
                   style={{ fontFamily: "'Cinzel', serif" }}
                 />
                 <GoldDivider />
+                <p
+                  className="mt-6 max-w-2xl text-sm leading-relaxed text-[#F5F0E8]/50"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+                >
+                  A quick view of the premium experiences included in the mixed-use destination.
+                </p>
               </RevealSection>
 
-              {/* Amenity list — editorial hover rows */}
-              <div className="flex flex-col">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {amenities.map((item, i) => (
                   <motion.div
                     key={item.title}
-                    onHoverStart={() => setHoveredAmenity(i)}
-                    onHoverEnd={() => setHoveredAmenity(null)}
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.7, delay: i * 0.1 }}
-                    className="group flex items-start gap-3 sm:gap-10 py-5 sm:py-7 border-b border-[#C9A84C]/10 cursor-default"
-                    style={{ borderTop: i === 0 ? '1px solid rgba(201,168,76,0.10)' : undefined }}
+                    transition={{ duration: 0.6, delay: i * 0.05 }}
+                    className="amenity-card glass-dark rounded-3xl border border-[#C9A84C]/15 p-5 flex items-start gap-4 overflow-hidden relative group"
                   >
-                    {/* Index number */}
-                    <span
-                      className="flex-shrink-0 text-[11px] font-semibold tracking-[0.3em] text-[#C9A84C]/40 pt-1 transition-colors duration-500 group-hover:text-[#C9A84C]"
-                      style={{ fontFamily: "'Cinzel', serif", minWidth: '2.5rem' }}
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
+                    <div className="amenity-card-bg absolute inset-0 opacity-0 pointer-events-none">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="amenity-card-dimmer absolute inset-0 bg-gradient-to-b from-[#08080E]/10 via-[#08080E]/65 to-[#08080E]/95" />
+                    </div>
 
-                    {/* Main content */}
-                    <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-4">
-                      {/* Title */}
-                      <motion.h3
-                        animate={{
-                          color: hoveredAmenity === i ? '#F5F0E8' : 'rgba(245,240,232,0.40)',
-                          x: hoveredAmenity === i ? 8 : 0,
-                        }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-lg sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight flex-1"
+                    <div className="mt-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A84C]/10 text-[#C9A84C] z-10">
+                      <Star className="h-5 w-5" />
+                    </div>
+                    <div className="relative z-10">
+                      <h3
+                        className="text-base font-semibold text-[#F5F0E8]"
                         style={{ fontFamily: "'Cinzel', serif" }}
                       >
                         {item.title}
-                      </motion.h3>
-
-                      {/* Tag pill */}
-                      <motion.span
-                        animate={{ opacity: hoveredAmenity === i ? 1 : 0.35 }}
-                        transition={{ duration: 0.4 }}
-                        className="flex-shrink-0 rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/5 px-4 py-1 text-[9px] font-semibold uppercase tracking-[0.3em] text-[#C9A84C]"
-                        style={{ fontFamily: "'Cinzel', serif" }}
-                      >
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[#F5F0E8]/55">
                         {item.tag}
-                      </motion.span>
+                      </p>
                     </div>
-
-                    {/* Description reveal — right side */}
-                    <motion.div
-                      animate={{
-                        opacity: hoveredAmenity === i ? 1 : 0,
-                        x: hoveredAmenity === i ? 0 : 16,
-                      }}
-                      transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-                      className="hidden xl:flex flex-col gap-1 text-right max-w-xs"
-                    >
-                      <p className="text-sm leading-relaxed text-[#F5F0E8]/60" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-                        {item.description}
-                      </p>
-                      <p className="text-[10px] tracking-[0.2em] text-[#C9A84C]/70 uppercase mt-1" style={{ fontFamily: "'Cinzel', serif" }}>
-                        {item.detail}
-                      </p>
-                    </motion.div>
-
-                    {/* Arrow indicator */}
-                    <motion.div
-                      animate={{
-                        opacity: hoveredAmenity === i ? 1 : 0,
-                        x: hoveredAmenity === i ? 0 : -8,
-                      }}
-                      transition={{ duration: 0.4 }}
-                      className="flex-shrink-0 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/40 bg-[#C9A84C]/10"
-                    >
-                      <span className="text-[#C9A84C] text-sm">→</span>
-                    </motion.div>
                   </motion.div>
                 ))}
               </div>
@@ -1881,49 +1885,6 @@ export default function App() {
         <LuxuryTimeline />
 
         <SectionDivider />
-
-        {/* ══════════════ WHY CHOOSE US ══════════════ */}
-        <section className="relative overflow-hidden bg-[#0D0D18] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(201,168,76,0.05)_0%,transparent_60%)] pointer-events-none" />
-
-          <div className="mx-auto max-w-7xl">
-            <RevealSection className="text-center mb-12 sm:mb-24">
-              <span className="section-label">Why Choose Us</span>
-              <CinematicTitle
-                text="A destination of unmatched luxury & connectivity."
-                align="center"
-                className="mt-6 sm:mt-8 text-3xl sm:text-5xl font-bold tracking-tight leading-[0.92] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
-                style={{ fontFamily: "'Cinzel', serif" }}
-              />
-              <GoldDivider />
-            </RevealSection>
-
-            <div className="grid gap-3 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {whyChooseUs.map((item, i) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.07 }}
-                  className="luxury-card p-5 sm:p-7 group"
-                >
-                  <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/25 bg-[#C9A84C]/8 text-[#C9A84C] text-xs transition-all duration-300 group-hover:border-[#C9A84C]/60 group-hover:bg-[#C9A84C]/15">
-                    ✦
-                  </div>
-                  <h3
-                    className="mb-3 text-sm font-semibold tracking-wide text-[#F5F0E8]/90"
-                    style={{ fontFamily: "'Cinzel', serif" }}
-                  >
-                    {item.title}
-                  </h3>
-                  <div className="mb-3 h-px w-8 bg-gradient-to-r from-[#C9A84C] to-transparent" />
-                  <p className="text-xs leading-relaxed text-[#F5F0E8]/40">{item.detail}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ══════════════ CTA BANNER ══════════════ */}
         <section ref={ctaRef} className="relative overflow-hidden bg-[#08080E] py-16 sm:py-28 px-4 sm:px-8 lg:px-16">
@@ -2389,6 +2350,176 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Floating CTA */}
+      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40">
+        <button
+          onClick={() => {
+            setBrochureSubmitted(false);
+            setBrochureModalOpen(true);
+          }}
+          className="group relative flex items-center justify-center gap-2 rounded-full border border-[#C9A84C]/30 bg-[#08080E]/85 px-4 py-3 text-[#F5F0E8] transition-all duration-500 hover:border-[#C9A84C] hover:bg-[#C9A84C]/10 hover:shadow-[0_0_30px_rgba(201,168,76,0.3)] backdrop-blur-md md:px-6 md:py-3.5"
+          style={{ fontFamily: "'Cinzel', serif" }}
+        >
+          {/* Ambient Glow behind button */}
+          <div className="absolute inset-0 rounded-full bg-[#C9A84C]/5 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
+          
+          <FileDown className="h-4 w-4 text-[#C9A84C] transition-transform duration-300 group-hover:-translate-y-0.5" />
+          
+          {/* Label: Full text on desktop, short "Brochure" on mobile */}
+          <span className="hidden md:inline text-[10px] font-semibold uppercase tracking-[0.25em]">
+            Download Brochure
+          </span>
+          <span className="inline md:hidden text-[9px] font-semibold uppercase tracking-[0.2em]">
+            Brochure
+          </span>
+        </button>
+      </div>
+
+      {/* Brochure Request Modal */}
+      <AnimatePresence>
+        {brochureModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setBrochureModalOpen(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#08080E]/95 backdrop-blur-2xl p-4 sm:p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#C9A84C]/15 bg-[#08080E]/95 p-6 sm:p-8 shadow-[0_50px_120px_rgba(0,0,0,0.8),0_0_50px_rgba(201,168,76,0.05)]"
+            >
+              {/* Gold decorative border accents */}
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent" />
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setBrochureModalOpen(false)}
+                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full border border-[#C9A84C]/25 bg-[#C9A84C]/5 text-[#C9A84C] transition hover:bg-[#C9A84C]/20 hover:border-[#C9A84C]/55"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+
+              {brochureSubmitted ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-6"
+                >
+                  <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/10 text-[#C9A84C] shadow-[0_0_20px_rgba(201,168,76,0.15)]">
+                    <FileDown className="h-6 w-6" />
+                  </div>
+                  <h3
+                    className="text-2xl font-bold text-[#F5F0E8] mb-3"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    Thank You
+                  </h3>
+                  <p
+                    className="text-sm text-[#F5F0E8]/45 mb-6"
+                    style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+                  >
+                    Your brochure request is received. The download will begin, and a copy has been sent to your email.
+                  </p>
+                  <button
+                    onClick={() => setBrochureModalOpen(false)}
+                    className="btn-luxury-gold w-full rounded-full py-3 text-[10px] font-bold uppercase tracking-[0.25em] justify-center"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    Close Window
+                  </button>
+                </motion.div>
+              ) : (
+                <div>
+                  <div className="mb-6">
+                    <h3
+                      className="text-xl font-bold text-[#F5F0E8] uppercase tracking-wider"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      Download Brochure
+                    </h3>
+                    <p
+                      className="text-xs text-[#F5F0E8]/45 mt-1"
+                      style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+                    >
+                      Enter your details to receive the high-resolution e-brochure.
+                    </p>
+                    <div className="mt-3 h-px w-16 bg-gradient-to-r from-[#C9A84C] to-transparent" />
+                  </div>
+
+                  <form onSubmit={handleBrochureSubmit} className="space-y-4">
+                    <label className="block">
+                      <span
+                        className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.25em] text-[#C9A84C]/75"
+                        style={{ fontFamily: "'Cinzel', serif" }}
+                      >
+                        Full Name
+                      </span>
+                      <input
+                        value={brochureFormValues.fullName}
+                        onChange={(e) => setBrochureFormValues({ ...brochureFormValues, fullName: e.target.value })}
+                        required
+                        type="text"
+                        className="luxury-input"
+                        placeholder="Raj Patel"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span
+                        className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.25em] text-[#C9A84C]/75"
+                        style={{ fontFamily: "'Cinzel', serif" }}
+                      >
+                        Email Address
+                      </span>
+                      <input
+                        value={brochureFormValues.email}
+                        onChange={(e) => setBrochureFormValues({ ...brochureFormValues, email: e.target.value })}
+                        required
+                        type="email"
+                        className="luxury-input"
+                        placeholder="mail@atmmall.in"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span
+                        className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.25em] text-[#C9A84C]/75"
+                        style={{ fontFamily: "'Cinzel', serif" }}
+                      >
+                        Phone Number
+                      </span>
+                      <input
+                        value={brochureFormValues.phone}
+                        onChange={(e) => setBrochureFormValues({ ...brochureFormValues, phone: e.target.value })}
+                        required
+                        type="tel"
+                        className="luxury-input"
+                        placeholder="+91 95123 00392"
+                      />
+                    </label>
+
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        className="btn-luxury-gold w-full rounded-full py-3.5 text-[9px] font-bold uppercase tracking-[0.25em] shadow-[0_0_30px_rgba(201,168,76,0.15)] justify-center"
+                        style={{ fontFamily: "'Cinzel', serif" }}
+                      >
+                        Get E-Brochure
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       </motion.div>
     </div>
   );
