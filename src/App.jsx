@@ -61,7 +61,7 @@ const whyChooseUs = [
 ───────────────────────────────────────────────────── */
 function AnimatedCounter({ value, suffix }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const isInView = useInView(ref, { once: true, margin: '0px' });
   const [display, setDisplay] = useState(0);
   const num = parseFloat(value);
 
@@ -873,6 +873,7 @@ export default function App() {
   const [isLoading,     setIsLoading]     = useState(true);
   const [activeFilter,   setActiveFilter]   = useState('All');
   const [hoveredAmenity, setHoveredAmenity] = useState(null);
+  const [activeMobileAmenity, setActiveMobileAmenity] = useState(0);
   const [transitionStage, setTransitionStage] = useState('idle');
 
   const handleNavClick = useCallback((e, href) => {
@@ -1116,56 +1117,57 @@ export default function App() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -16, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -16, scale: 0.97 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="fixed inset-0 z-50 bg-[#08080E]/98 backdrop-blur-[30px] border-b border-[#C9A84C]/15 p-8 shadow-[0_40px_120px_rgba(0,0,0,0.9)] lg:hidden flex flex-col justify-center items-center gap-6 sm:inset-x-4 sm:top-20 sm:bottom-auto sm:h-auto sm:rounded-2xl sm:py-8 sm:px-12 sm:items-start sm:border sm:border-[#C9A84C]/15"
-            >
-              <div className="flex flex-col gap-5 items-center sm:items-start w-full">
-                {navLinks.map((link, i) => {
-                  const isActive = activeSection === link.href.substring(1);
-                  return (
-                    <motion.a
-                      key={link.href}
-                      href={link.href}
-                      onClick={(e) => {
-                        setMenuOpen(false);
-                        handleNavClick(e, link.href);
-                      }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className={`text-xl sm:text-base font-semibold uppercase tracking-[0.2em] transition ${
-                        isActive ? 'text-[#C9A84C]' : 'text-[#F5F0E8]/70 hover:text-[#C9A84C]'
-                      }`}
-                      style={{ fontFamily: "'Cinzel', serif" }}
-                    >
-                      {link.label}
-                    </motion.a>
-                  );
-                })}
-                <div className="h-px w-12 bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent my-1 sm:my-2 w-16" />
-                <a
-                  href="#contact"
-                  onClick={(e) => {
-                    setMenuOpen(false);
-                    handleNavClick(e, '#contact');
-                  }}
-                  className="btn-luxury-gold inline-flex items-center justify-center rounded-full px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em]"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
-                  Book a Visit
-                </a>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16, scale: 0.97 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="fixed inset-0 z-50 bg-[#08080E]/98 backdrop-blur-[30px] border-b border-[#C9A84C]/15 p-8 shadow-[0_40px_120px_rgba(0,0,0,0.9)] lg:hidden flex flex-col justify-center items-center gap-6 sm:inset-x-4 sm:top-20 sm:bottom-auto sm:h-auto sm:rounded-2xl sm:py-8 sm:px-12 sm:items-start sm:border sm:border-[#C9A84C]/15"
+          >
+            <div className="flex flex-col gap-5 items-center sm:items-start w-full">
+              {navLinks.map((link, i) => {
+                const isActive = activeSection === link.href.substring(1);
+                return (
+                  <motion.a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(e) => {
+                      setMenuOpen(false);
+                      handleNavClick(e, link.href);
+                    }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className={`text-xl sm:text-base font-semibold uppercase tracking-[0.2em] transition ${
+                      isActive ? 'text-[#C9A84C]' : 'text-[#F5F0E8]/70 hover:text-[#C9A84C]'
+                    }`}
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    {link.label}
+                  </motion.a>
+                );
+              })}
+              <div className="h-px w-12 bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent my-1 sm:my-2 w-16" />
+              <a
+                href="#contact"
+                onClick={(e) => {
+                  setMenuOpen(false);
+                  handleNavClick(e, '#contact');
+                }}
+                className="btn-luxury-gold inline-flex items-center justify-center rounded-full px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Book a Visit
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main>
         {/* ══════════════ HERO ══════════════ */}
@@ -1508,8 +1510,8 @@ export default function App() {
                 <GoldDivider />
               </RevealSection>
 
-              {/* Amenity list — editorial hover rows */}
-              <div className="flex flex-col">
+              {/* Amenity list — editorial hover rows (Desktop) */}
+              <div className="hidden sm:flex flex-col">
                 {amenities.map((item, i) => (
                   <motion.div
                     key={item.title}
@@ -1586,6 +1588,121 @@ export default function App() {
                     </motion.div>
                   </motion.div>
                 ))}
+              </div>
+
+              {/* Amenity list — interactive accordion (Mobile) */}
+              <div className="flex sm:hidden flex-col gap-4">
+                {amenities.map((item, i) => {
+                  const isActive = activeMobileAmenity === i;
+                  return (
+                    <motion.div
+                      key={item.title + '-mobile'}
+                      layout
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.05 }}
+                      onClick={() => setActiveMobileAmenity(isActive ? null : i)}
+                      className={`relative rounded-2xl border transition-all duration-500 overflow-hidden cursor-pointer ${
+                        isActive
+                          ? 'border-[#C9A84C]/40 bg-gradient-to-b from-[#111120] to-[#0A0A12] shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(201,168,76,0.1)]'
+                          : 'border-[#C9A84C]/10 bg-[#0C0C14]/50'
+                      }`}
+                    >
+                      {/* Main Header Item */}
+                      <div className="flex items-center justify-between p-5">
+                        <div className="flex items-center gap-4">
+                          <span
+                            className={`text-xs font-bold tracking-widest transition-colors duration-300 ${
+                              isActive ? 'text-[#C9A84C]' : 'text-[#C9A84C]/45'
+                            }`}
+                            style={{ fontFamily: "'Cinzel', serif" }}
+                          >
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <h3
+                            className={`text-sm font-semibold tracking-wider transition-colors duration-300 ${
+                              isActive ? 'text-[#F5F0E8]' : 'text-[#F5F0E8]/50'
+                            }`}
+                            style={{ fontFamily: "'Cinzel', serif" }}
+                          >
+                            {item.title}
+                          </h3>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`rounded-full border px-3 py-1 text-[8px] font-semibold uppercase tracking-wider transition-all duration-300 ${
+                              isActive
+                                ? 'border-[#C9A84C]/40 bg-[#C9A84C]/15 text-[#C9A84C] opacity-100'
+                                : 'border-[#C9A84C]/15 bg-transparent text-[#C9A84C]/40 opacity-70'
+                            }`}
+                            style={{ fontFamily: "'Cinzel', serif" }}
+                          >
+                            {item.tag}
+                          </span>
+                          <motion.span
+                            animate={{ rotate: isActive ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-[#C9A84C]/60 text-[10px]"
+                          >
+                            ▼
+                          </motion.span>
+                        </div>
+                      </div>
+
+                      {/* Expandable Panel */}
+                      <AnimatePresence initial={false}>
+                        {isActive && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-5 pb-6 border-t border-[#C9A84C]/10 pt-4 flex flex-col gap-4">
+                              {/* Amenity Image */}
+                              <div className="relative h-48 w-full overflow-hidden rounded-xl border border-[#C9A84C]/15 shadow-inner">
+                                <motion.img
+                                  initial={{ scale: 1.1 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ duration: 0.6 }}
+                                  src={item.image}
+                                  alt={item.title}
+                                  className="h-full w-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/80 via-transparent to-transparent pointer-events-none" />
+                              </div>
+
+                              {/* Details Info */}
+                              <div className="flex flex-col gap-2">
+                                <p
+                                  className="text-sm leading-relaxed text-[#F5F0E8]/70 font-medium"
+                                  style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '15px' }}
+                                >
+                                  {item.description}
+                                </p>
+                                
+                                <div className="h-px w-8 bg-gradient-to-r from-[#C9A84C]/50 to-transparent my-1" />
+
+                                <div className="flex items-center gap-2">
+                                  <span className="h-1 w-1 rounded-full bg-[#C9A84C]" />
+                                  <p
+                                    className="text-[9px] tracking-[0.2em] text-[#C9A84C] uppercase font-semibold"
+                                    style={{ fontFamily: "'Cinzel', serif" }}
+                                  >
+                                    {item.detail}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>
