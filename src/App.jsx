@@ -64,6 +64,7 @@ function AnimatedCounter({ value, suffix }) {
   const isInView = useInView(ref, { once: true, margin: '0px' });
   const [display, setDisplay] = useState(0);
   const num = parseFloat(value);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     if (!isInView) return;
@@ -74,9 +75,13 @@ function AnimatedCounter({ value, suffix }) {
       const progress = Math.min((timestamp - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(+(num * eased).toFixed(num % 1 !== 0 ? 1 : 0));
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      }
     };
-    requestAnimationFrame(step);
+    rafRef.current = requestAnimationFrame(step);
+    // Cancel animation frame on unmount to prevent memory leak
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [isInView, num]);
 
   return (
@@ -667,6 +672,8 @@ function BreathingSpace({ image, title, subtitle }) {
           style={{ y }}
           src={image}
           alt="Breathing space view"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-[130%] w-full object-cover opacity-25"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#08080E] via-[#08080E]/40 to-[#08080E]" />
@@ -716,21 +723,21 @@ function RevealImage({ src, alt, className = "", parallaxY, heightClass = "h-ful
         className="absolute inset-y-0 w-full bg-gradient-to-r from-transparent via-[#C9A84C]/15 to-transparent z-10 pointer-events-none transform -skew-x-12"
       />
 
-      {/* Main Image with scale, blur, and opacity fade-in reveal */}
+      {/* Main Image with scale and opacity fade-in reveal — blur removed (GPU memory) */}
       <motion.img
         style={parallaxY ? { y: parallaxY } : {}}
         src={src}
         alt={alt}
+        loading="lazy"
+        decoding="async"
         className={`absolute inset-0 w-full ${parallaxY ? 'h-[125%]' : 'h-full'} object-cover`}
         initial={{ 
           opacity: 0,
-          scale: 1.25, 
-          filter: "blur(15px)"
+          scale: 1.15,
         }}
         whileInView={{ 
           opacity: 1,
-          scale: 1.0, 
-          filter: "blur(0px)"
+          scale: 1.0,
         }}
         viewport={{ once: true, margin: "-40px" }}
         onAnimationComplete={() => {
@@ -739,7 +746,6 @@ function RevealImage({ src, alt, className = "", parallaxY, heightClass = "h-ful
         transition={{ 
           opacity: { duration: 0.8, ease: "easeOut" },
           scale: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
-          filter: { duration: 1.1, ease: "easeOut" }
         }}
       />
     </div>
@@ -766,12 +772,10 @@ function CinematicTitle({ text, className = "", delay = 0, align = "center", sty
     hidden: { 
       opacity: 0, 
       y: 20,
-      filter: "blur(3px)"
     },
     visible: { 
       opacity: 1, 
       y: 0,
-      filter: "blur(0px)",
       transition: { 
         duration: 0.8, 
         ease: [0.16, 1, 0.3, 1] 
@@ -1177,6 +1181,9 @@ export default function App() {
             <img
               src="/hero-lawn.jpg"
               alt="ATM Mall"
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
               className="absolute inset-0 h-[115%] w-full object-cover hero-image"
             />
             {/* Subtle moving light rays overlay */}
@@ -1480,8 +1487,9 @@ export default function App() {
               <img
                 src={item.image}
                 alt={item.title}
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ willChange: 'opacity' }}
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#08080E] via-[#08080E]/75 to-[#08080E]/30" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/60 via-transparent to-[#08080E]/40" />
@@ -1725,6 +1733,8 @@ export default function App() {
               style={{ y: hotelY }}
               src="/hyatt-view.jpg"
               alt="Hotel experience"
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-[120%] w-full object-cover opacity-15"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-[#08080E] via-[#08080E]/85 to-[#08080E]" />

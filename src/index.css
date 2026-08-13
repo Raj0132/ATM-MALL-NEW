@@ -238,7 +238,7 @@ button, a {
   filter: blur(80px);
   animation: orbDrift var(--orb-dur, 22s) ease-in-out infinite, orbPulse var(--orb-pulse, 8s) ease-in-out infinite;
   animation-delay: var(--orb-delay, 0s);
-  will-change: transform, opacity;
+  /* Removed will-change — keeping GPU layers alive for non-animating orbs wastes VRAM */
   z-index: 0;
 }
 
@@ -303,6 +303,14 @@ button, a {
   will-change: transform;
 }
 
+/* Disable Ken Burns on mobile — double GPU rasterization with parallax causes crash */
+@media (hover: none) and (pointer: coarse) {
+  .hero-image {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 /* Subtle moving light rays overlay */
 .light-rays {
   position: absolute;
@@ -319,6 +327,13 @@ button, a {
   pointer-events: none;
   z-index: 2;
   mix-blend-mode: screen;
+}
+
+/* Disable on mobile — filter:blur on a full-screen element is a WebKit memory hog */
+@media (hover: none) and (pointer: coarse) {
+  .light-rays {
+    display: none;
+  }
 }
 
 @keyframes sweepRays {
@@ -338,6 +353,13 @@ button, a {
   left: var(--x, 50%);
   bottom: -10px;
   box-shadow: 0 0 6px 2px rgba(201, 168, 76, 0.4);
+}
+
+/* 28 animated compositing layers on mobile — hide all */
+@media (hover: none) and (pointer: coarse) {
+  .hero-particle {
+    display: none;
+  }
 }
 
 /* ─── GOLD SHIMMER TEXT ─────────────────────────────── */
@@ -1087,5 +1109,39 @@ button, a {
   /* Ensure buttons have proper touch targets */
   button, a, [role="button"] {
     -webkit-tap-highlight-color: rgba(201, 168, 76, 0.1);
+  }
+
+  /* ─── KILL ALL backdrop-filter ON MOBILE ─────────────────────────────────
+     iOS Safari renders every backdrop-filter element by GPU-compositing the
+     entire layer behind it into a texture. With 8+ simultaneous blurs (gallery
+     icons, glass cards, navbar, floating badges), VRAM is exhausted and WebKit
+     kills the tab. Strip every blur on touch devices — the visual difference
+     is minimal on small screens and prevents the crash entirely.
+  ──────────────────────────────────────────────────────────────────────── */
+  .glass-dark,
+  .glass-gold,
+  .glass-cream,
+  .glass-amenity-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* Use a slightly more opaque fallback background to maintain legibility */
+    background: rgba(8, 8, 14, 0.92) !important;
+  }
+
+  /* Gallery image corner icons — each one was a composited backdrop-blur layer */
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Pool floating badge */
+  .backdrop-blur-xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Noise overlay on mobile is unnecessary GPU work */
+  .noise-overlay {
+    display: none;
   }
 }
