@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu, FileText, Download, CheckCircle2 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────
    DATA
@@ -866,19 +866,282 @@ function CinematicTransitionOverlay({ stage }) {
 }
 
 /* ─────────────────────────────────────────────────────
+   BROCHURE REQUEST MODAL
+───────────────────────────────────────────────────── */
+function BrochureModal({ isOpen, onClose }) {
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }, 700);
+  };
+
+  const handleResetAndClose = () => {
+    onClose();
+    setTimeout(() => {
+      setSubmitted(false);
+      setForm({ fullName: '', email: '', phone: '' });
+    }, 300);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          onClick={handleResetAndClose}
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#08080E]/90 backdrop-blur-xl p-4 sm:p-6 overflow-y-auto"
+        >
+          <motion.div
+            initial={{ scale: 0.93, opacity: 0, y: 15 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.93, opacity: 0, y: 15 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[#C9A84C]/25 bg-[#0D0D18] p-6 sm:p-10 shadow-[0_25px_80px_rgba(0,0,0,0.9),0_0_50px_rgba(201,168,76,0.12)] my-auto"
+          >
+            {/* Close button */}
+            <button
+              onClick={handleResetAndClose}
+              className="absolute right-5 top-5 sm:right-6 sm:top-6 flex h-9 w-9 items-center justify-center rounded-full border border-[#C9A84C]/20 bg-[#C9A84C]/5 text-[#C9A84C] transition-all duration-300 hover:border-[#C9A84C]/60 hover:bg-[#C9A84C]/15 hover:rotate-90"
+              aria-label="Close modal"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            {/* Subtle radial gold glow inside modal */}
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full bg-[#C9A84C]/10 blur-3xl" />
+
+            {submitted ? (
+              <div className="py-4 sm:py-6 text-center">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-[#C9A84C]/40 bg-[#C9A84C]/10 shadow-[0_0_30px_rgba(201,168,76,0.25)]">
+                  <CheckCircle2 className="h-8 w-8 text-[#C9A84C]" />
+                </div>
+                <h3
+                  className="text-2xl font-bold tracking-tight text-[#F5F0E8] sm:text-3xl"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  Brochure Unlocked
+                </h3>
+                <p
+                  className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[#F5F0E8]/70"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '17px' }}
+                >
+                  Thank you, <span className="text-[#C9A84C] font-semibold">{form.fullName || 'Valued Guest'}</span>. The official ATM MALL masterplan brochure and investment dossier is ready.
+                </p>
+
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                  <a
+                    href="#download"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      alert('Download initiated. The complete project dossier PDF will begin downloading.');
+                    }}
+                    className="btn-luxury-gold inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] shadow-[0_0_30px_rgba(201,168,76,0.25)]"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    <Download className="h-4 w-4" />
+                    Download PDF
+                  </a>
+                  <button
+                    onClick={handleResetAndClose}
+                    className="inline-flex items-center justify-center rounded-full border border-[#C9A84C]/30 bg-transparent px-6 py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] text-[#F5F0E8]/70 hover:text-[#F5F0E8] hover:border-[#C9A84C]/60 transition-all duration-300"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="mb-6 sm:mb-8 text-center sm:text-left">
+                  <span
+                    className="inline-block text-[9px] font-bold tracking-[0.35em] text-[#C9A84C] uppercase mb-2 border-b border-[#C9A84C]/30 pb-0.5"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    Exclusive Project Dossier
+                  </span>
+                  <h3
+                    className="text-2xl font-bold tracking-tight text-[#F5F0E8] sm:text-3xl"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    Download Brochure
+                  </h3>
+                  <p
+                    className="mt-2 text-xs sm:text-sm text-[#F5F0E8]/60 leading-relaxed"
+                    style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '15px' }}
+                  >
+                    Enter your contact details to receive floor plans, retail specifications, hospitality details, and investment highlights.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <label className="block">
+                    <span
+                      className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.28em] text-[#C9A84C]/80"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      Full Name *
+                    </span>
+                    <input
+                      required
+                      type="text"
+                      value={form.fullName}
+                      onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      placeholder="e.g. Raj Patel"
+                      className="luxury-input"
+                    />
+                  </label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label className="block">
+                      <span
+                        className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.28em] text-[#C9A84C]/80"
+                        style={{ fontFamily: "'Cinzel', serif" }}
+                      >
+                        Email Address *
+                      </span>
+                      <input
+                        required
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder="mail@domain.com"
+                        className="luxury-input"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span
+                        className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.28em] text-[#C9A84C]/80"
+                        style={{ fontFamily: "'Cinzel', serif" }}
+                      >
+                        Phone Number *
+                      </span>
+                      <input
+                        required
+                        type="tel"
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="+91 98765 43210"
+                        className="luxury-input"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="pt-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-luxury-gold w-full rounded-full py-3.5 sm:py-4 text-[10px] font-bold uppercase tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.25)] justify-center disabled:opacity-50"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center gap-2">
+                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#08080E] border-t-transparent" />
+                          Processing...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2.5">
+                          <Download className="h-4 w-4" />
+                          Get Instant Access
+                        </span>
+                      )}
+                    </button>
+                  </div>
+
+                  <p className="text-center text-[9px] tracking-wider text-[#F5F0E8]/40 pt-1">
+                    🔒 Confidential. Your information will never be shared.
+                  </p>
+                </form>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ─────────────────────────────────────────────────────
+   PERSISTENT FLOATING CTA (BOTTOM-RIGHT)
+───────────────────────────────────────────────────── */
+function FloatingBrochureCTA({ onOpen }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
+      className="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 z-40 flex items-center pointer-events-auto"
+    >
+      <motion.button
+        onClick={onOpen}
+        whileHover={{ y: -3, scale: 1.03 }}
+        whileTap={{ scale: 0.96 }}
+        className="group relative flex items-center rounded-full border border-[#C9A84C]/45 bg-[#090912]/92 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_30px_rgba(201,168,76,0.18)] transition-all duration-300 hover:border-[#C9A84C] hover:bg-[#121222] hover:shadow-[0_12px_45px_rgba(0,0,0,0.9),0_0_40px_rgba(201,168,76,0.35)] px-3.5 py-2.5 sm:px-6 sm:py-3.5 gap-2.5 sm:gap-3"
+        style={{ fontFamily: "'Cinzel', serif" }}
+        aria-label="Download Project Brochure"
+      >
+        {/* Subtle glowing animated ring */}
+        <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-[#C9A84C]/30 via-[#E8D8A0]/40 to-[#C9A84C]/30 opacity-40 blur-[4px] transition-opacity duration-300 group-hover:opacity-100 -z-10" />
+
+        {/* Icon with circular gold backdrop */}
+        <div className="flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full border border-[#C9A84C]/40 bg-[#C9A84C]/15 text-[#C9A84C] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#C9A84C] group-hover:text-[#08080E]">
+          <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </div>
+
+        {/* Desktop full text */}
+        <span className="hidden sm:inline-block text-[11px] font-bold uppercase tracking-[0.25em] text-[#F5F0E8] group-hover:text-[#C9A84C] transition-colors duration-300 whitespace-nowrap">
+          Download Brochure
+        </span>
+
+        {/* Mobile short label */}
+        <span className="inline-block sm:hidden text-[9px] font-bold uppercase tracking-[0.18em] text-[#F5F0E8] group-hover:text-[#C9A84C] transition-colors duration-300 whitespace-nowrap">
+          Brochure
+        </span>
+      </motion.button>
+    </motion.div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────
    MAIN APP
 ───────────────────────────────────────────────────── */
 export default function App() {
-  const [menuOpen,      setMenuOpen]      = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [formValues,    setFormValues]    = useState({ fullName: '', phone: '', email: '', message: '' });
-  const [scrolled,      setScrolled]      = useState(false);
-  const [isLoading,     setIsLoading]     = useState(true);
-  const [activeFilter,   setActiveFilter]   = useState('All');
-  const [hoveredAmenity, setHoveredAmenity] = useState(null);
+  const [menuOpen,          setMenuOpen]          = useState(false);
+  const [selectedImage,     setSelectedImage]     = useState(null);
+  const [brochureModalOpen, setBrochureModalOpen] = useState(false);
+  const [formSubmitted,     setFormSubmitted]     = useState(false);
+  const [formValues,        setFormValues]        = useState({ fullName: '', phone: '', email: '', message: '' });
+  const [scrolled,          setScrolled]          = useState(false);
+  const [isLoading,         setIsLoading]         = useState(true);
+  const [activeFilter,       setActiveFilter]       = useState('All');
+  const [hoveredAmenity,     setHoveredAmenity]     = useState(null);
   const [activeMobileAmenity, setActiveMobileAmenity] = useState(0);
-  const [transitionStage, setTransitionStage] = useState('idle');
+  const [transitionStage,   setTransitionStage]   = useState('idle');
 
   const handleNavClick = useCallback((e, href) => {
     e.preventDefault();
@@ -1696,6 +1959,19 @@ export default function App() {
                   );
                 })}
               </div>
+
+              {/* Download Brochure Button */}
+              <div className="mt-8 sm:mt-12 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setBrochureModalOpen(true)}
+                  className="inline-flex items-center gap-3 rounded-full border border-[#C9A84C]/35 bg-[#0A0A10]/90 px-6 py-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.25em] text-[#F5F0E8] shadow-[0_8px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 hover:border-[#C9A84C] hover:bg-[#C9A84C]/10 hover:shadow-[0_0_25px_rgba(201,168,76,0.2)] group cursor-pointer"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  <FileText className="h-3.5 w-3.5 text-[#C9A84C] transition-transform duration-300 group-hover:scale-110" />
+                  <span>Download Brochure</span>
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -2500,6 +2776,12 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Persistent Floating Brochure CTA */}
+      <FloatingBrochureCTA onOpen={() => setBrochureModalOpen(true)} />
+
+      {/* Brochure Request Modal */}
+      <BrochureModal isOpen={brochureModalOpen} onClose={() => setBrochureModalOpen(false)} />
       </motion.div>
     </div>
   );
