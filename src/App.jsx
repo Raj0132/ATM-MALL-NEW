@@ -1518,82 +1518,66 @@ export default function App() {
                 <GoldDivider />
               </RevealSection>
 
-              {/* Amenity list — editorial hover rows (Desktop) */}
-              <div className="hidden sm:flex flex-col">
+              {/* Amenity list — card grid (Desktop) */}
+              <div className="hidden sm:grid grid-cols-3 gap-4">
                 {amenities.map((item, i) => (
                   <motion.div
                     key={item.title}
-                    onHoverStart={() => setHoveredAmenity(i)}
-                    onHoverEnd={() => setHoveredAmenity(null)}
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.7, delay: i * 0.1 }}
-                    className="group flex items-start gap-3 sm:gap-10 py-5 sm:py-7 border-b border-[#C9A84C]/10 cursor-default"
-                    style={{ borderTop: i === 0 ? '1px solid rgba(201,168,76,0.10)' : undefined }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-30px' }}
+                    transition={{ duration: 0.55, delay: i * 0.07 }}
+                    className="relative group rounded-2xl overflow-hidden cursor-default"
+                    style={{
+                      border: '1px solid rgba(201,168,76,0.12)',
+                      minHeight: '88px',
+                    }}
                   >
-                    {/* Index number */}
-                    <span
-                      className="flex-shrink-0 text-[11px] font-semibold tracking-[0.3em] text-[#C9A84C]/40 pt-1 transition-colors duration-500 group-hover:text-[#C9A84C]"
-                      style={{ fontFamily: "'Cinzel', serif", minWidth: '2.5rem' }}
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
+                    {/* Background image — always present, revealed on hover */}
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-all duration-700 ease-out"
+                      loading="lazy"
+                    />
 
-                    {/* Main content */}
-                    <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-4">
-                      {/* Title */}
-                      <motion.h3
-                        animate={{
-                          color: hoveredAmenity === i ? '#F5F0E8' : 'rgba(245,240,232,0.40)',
-                          x: hoveredAmenity === i ? 8 : 0,
-                        }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-lg sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight flex-1"
-                        style={{ fontFamily: "'Cinzel', serif" }}
-                      >
-                        {item.title}
-                      </motion.h3>
+                    {/* Dark base — fades out on hover to reveal image */}
+                    <div className="absolute inset-0 bg-[#0C0C14] group-hover:bg-transparent transition-colors duration-500" />
 
-                      {/* Tag pill */}
-                      <motion.span
-                        animate={{ opacity: hoveredAmenity === i ? 1 : 0.35 }}
-                        transition={{ duration: 0.4 }}
-                        className="flex-shrink-0 rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/5 px-4 py-1 text-[9px] font-semibold uppercase tracking-[0.3em] text-[#C9A84C]"
-                        style={{ fontFamily: "'Cinzel', serif" }}
+                    {/* Gradient overlay on top of image */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/85 via-[#08080E]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                    {/* Card content */}
+                    <div className="relative flex items-center gap-4 px-5 py-5">
+                      {/* Star icon box */}
+                      <div
+                        className="flex-shrink-0 h-9 w-9 rounded-lg flex items-center justify-center transition-all duration-300"
+                        style={{ background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.22)' }}
                       >
-                        {item.tag}
-                      </motion.span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      </div>
+
+                      {/* Text */}
+                      <div className="flex flex-col gap-0.5">
+                        <h3
+                          className="text-sm font-bold tracking-wide leading-tight text-[#F5F0E8] group-hover:text-[#C9A84C] transition-colors duration-300"
+                          style={{ fontFamily: "'Cinzel', serif" }}
+                        >
+                          {item.title}
+                        </h3>
+                        <p
+                          className="text-[10px] tracking-[0.15em] uppercase text-[#F5F0E8]/50 group-hover:text-[#F5F0E8]/70 transition-colors duration-300"
+                          style={{ fontFamily: "'Cinzel', serif" }}
+                        >
+                          {item.tag}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Description reveal — right side */}
-                    <motion.div
-                      animate={{
-                        opacity: hoveredAmenity === i ? 1 : 0,
-                        x: hoveredAmenity === i ? 0 : 16,
-                      }}
-                      transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-                      className="hidden xl:flex flex-col gap-1 text-right max-w-xs"
-                    >
-                      <p className="text-sm leading-relaxed text-[#F5F0E8]/60" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-                        {item.description}
-                      </p>
-                      <p className="text-[10px] tracking-[0.2em] text-[#C9A84C]/70 uppercase mt-1" style={{ fontFamily: "'Cinzel', serif" }}>
-                        {item.detail}
-                      </p>
-                    </motion.div>
-
-                    {/* Arrow indicator */}
-                    <motion.div
-                      animate={{
-                        opacity: hoveredAmenity === i ? 1 : 0,
-                        x: hoveredAmenity === i ? 0 : -8,
-                      }}
-                      transition={{ duration: 0.4 }}
-                      className="flex-shrink-0 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#C9A84C]/40 bg-[#C9A84C]/10"
-                    >
-                      <span className="text-[#C9A84C] text-sm">→</span>
-                    </motion.div>
+                    {/* Gold border glow on hover */}
+                    <div className="absolute inset-0 rounded-2xl border border-[#C9A84C]/0 group-hover:border-[#C9A84C]/40 transition-all duration-400 pointer-events-none" />
                   </motion.div>
                 ))}
               </div>
