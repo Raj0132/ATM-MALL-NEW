@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu, FileText, Download, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu, FileText, Download, CheckCircle2, AlertCircle, Check } from 'lucide-react';
+import { supabase } from './lib/supabaseClient';
 
 /* ─────────────────────────────────────────────────────
    DATA
@@ -119,6 +120,8 @@ function LuxuryCursor() {
     setIsTouch(isTouchDevice);
     if (isTouchDevice) return;
 
+    document.body.classList.add('luxury-cursor-active');
+
     const onMove = (e) => {
       pos.current = { x: e.clientX, y: e.clientY };
       if (dotRef.current) {
@@ -157,6 +160,7 @@ function LuxuryCursor() {
     animate();
 
     return () => {
+      document.body.classList.remove('luxury-cursor-active');
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseover', handleMouseOver);
       cancelAnimationFrame(raf);
@@ -872,6 +876,7 @@ function BrochureModal({ isOpen, onClose }) {
   const [form, setForm] = useState({ fullName: '', email: '', phone: '' });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -887,19 +892,62 @@ function BrochureModal({ isOpen, onClose }) {
     };
   }, [isOpen, onClose]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg('');
+
+    const fullName = form.fullName.trim();
+    const email = form.email.trim().toLowerCase();
+    const phone = form.phone.trim();
+
+    if (!fullName) {
+      setErrorMsg('Please enter your full name.');
+      return;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+    if (!phone) {
+      setErrorMsg('Please enter your phone number.');
+      return;
+    }
+
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const { error } = await supabase.from('brochure_requests').insert([
+        {
+          name: fullName,
+          email: email,
+          phone: phone,
+        }
+      ]);
+
+      if (error) throw error;
+
       setSubmitted(true);
-    }, 700);
+
+      // Trigger automatic PDF download / open
+      const link = document.createElement('a');
+      link.href = '/ATM-MALL-Brochure.pdf';
+      link.download = 'ATM-MALL-Brochure.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error saving brochure request to Supabase:', err);
+      setErrorMsg(err.message || 'Unable to submit brochure request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetAndClose = () => {
     onClose();
     setTimeout(() => {
       setSubmitted(false);
+      setErrorMsg('');
       setForm({ fullName: '', email: '', phone: '' });
     }, 300);
   };
@@ -950,21 +998,20 @@ function BrochureModal({ isOpen, onClose }) {
                   className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[#F5F0E8]/70"
                   style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '17px' }}
                 >
-                  Thank you, <span className="text-[#C9A84C] font-semibold">{form.fullName || 'Valued Guest'}</span>. The official ATM MALL masterplan brochure and investment dossier is ready.
+                  Thank you, <span className="text-[#C9A84C] font-semibold">{form.fullName || 'Valued Guest'}</span>. The official ATM MALL masterplan brochure and investment dossier download has started.
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                   <a
-                    href="#download"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      alert('Download initiated. The complete project dossier PDF will begin downloading.');
-                    }}
+                    href="/ATM-MALL-Brochure.pdf"
+                    download="ATM-MALL-Brochure.pdf"
+                    target="_blank"
+                    rel="noreferrer"
                     className="btn-luxury-gold inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] shadow-[0_0_30px_rgba(201,168,76,0.25)]"
                     style={{ fontFamily: "'Cinzel', serif" }}
                   >
                     <Download className="h-4 w-4" />
-                    Download PDF
+                    Download PDF Again
                   </a>
                   <button
                     onClick={handleResetAndClose}
@@ -997,6 +1044,13 @@ function BrochureModal({ isOpen, onClose }) {
                     Enter your contact details to receive floor plans, retail specifications, hospitality details, and investment highlights.
                   </p>
                 </div>
+
+                {errorMsg && (
+                  <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-200 flex items-center gap-2.5">
+                    <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <label className="block">
@@ -1226,10 +1280,97 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleSubmit = (e) => {
+  const [contactSubmitting,   setContactSubmitting]   = useState(false);
+  const [contactError,        setContactError]        = useState('');
+  const [newsletterEmail,     setNewsletterEmail]     = useState('');
+  const [newsletterSubmitting,setNewsletterSubmitting]= useState(false);
+  const [newsletterStatus,    setNewsletterStatus]    = useState(null); // { type: 'success' | 'already' | 'error', message: string }
+
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    setFormSubmitted(true);
-    setFormValues({ fullName: '', phone: '', email: '', message: '' });
+    setContactError('');
+
+    const fullName = formValues.fullName.trim();
+    const phone = formValues.phone.trim();
+    const email = formValues.email.trim().toLowerCase();
+    const message = formValues.message.trim();
+
+    if (!fullName) {
+      setContactError('Please enter your full name.');
+      return;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setContactError('Please enter a valid email address.');
+      return;
+    }
+    if (!phone) {
+      setContactError('Please enter your phone number.');
+      return;
+    }
+
+    setContactSubmitting(true);
+    try {
+      const { error } = await supabase.from('leads').insert([
+        {
+          name: fullName,
+          phone: phone,
+          email: email,
+          message: message,
+        }
+      ]);
+
+      if (error) throw error;
+
+      setFormSubmitted(true);
+      setFormValues({ fullName: '', phone: '', email: '', message: '' });
+      setContactError('');
+    } catch (err) {
+      console.error('Error submitting inquiry to Supabase leads table:', err);
+      setContactError(err.message || 'Failed to submit your inquiry. Please try again.');
+    } finally {
+      setContactSubmitting(false);
+    }
+  };
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    setNewsletterStatus(null);
+
+    const email = newsletterEmail.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setNewsletterStatus({ type: 'error', message: 'Please enter a valid email address.' });
+      return;
+    }
+
+    setNewsletterSubmitting(true);
+    try {
+      const { error } = await supabase.from('subscribers').insert([
+        { email: email }
+      ]);
+
+      if (error) {
+        // Handle unique constraint violation (duplicate email)
+        const isDuplicate =
+          error.code === '23505' ||
+          error.message?.toLowerCase().includes('duplicate') ||
+          error.message?.toLowerCase().includes('unique') ||
+          error.details?.toLowerCase().includes('already exists');
+
+        if (isDuplicate) {
+          setNewsletterStatus({ type: 'already', message: "You're already subscribed!" });
+          return;
+        }
+        throw error;
+      }
+
+      setNewsletterStatus({ type: 'success', message: 'Subscribed! Thank you for staying informed.' });
+      setNewsletterEmail('');
+    } catch (err) {
+      console.error('Error adding newsletter subscriber to Supabase:', err);
+      setNewsletterStatus({ type: 'error', message: err.message || 'Subscription failed. Please try again.' });
+    } finally {
+      setNewsletterSubmitting(false);
+    }
   };
 
   return (
@@ -2426,13 +2567,13 @@ export default function App() {
                       transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
                       className="flex h-20 w-20 items-center justify-center rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/10 pulse-ring"
                     >
-                      <span className="text-2xl text-[#C9A84C]">✦</span>
+                      <CheckCircle2 className="h-8 w-8 text-[#C9A84C]" />
                     </motion.div>
                     <h3
                       className="text-2xl font-bold text-[#F5F0E8]"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Inquiry Received
+                      Thanks! We'll be in touch shortly.
                     </h3>
                     <p
                       className="max-w-sm text-base leading-relaxed text-[#F5F0E8]/50"
@@ -2442,14 +2583,14 @@ export default function App() {
                     </p>
                     <button
                       onClick={() => setFormSubmitted(false)}
-                      className="btn-luxury-subtle rounded-full border border-[#C9A84C]/20 px-8 py-3 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#F5F0E8]/60"
+                      className="btn-luxury-subtle rounded-full border border-[#C9A84C]/20 px-8 py-3 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#F5F0E8]/60 hover:text-[#C9A84C] hover:border-[#C9A84C]/50 transition-all duration-300"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
                       Submit Another Inquiry
                     </button>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleContactSubmit} className="space-y-5">
                     <div className="mb-5 sm:mb-7">
                       <h3
                         className="text-xl font-bold text-[#F5F0E8]"
@@ -2460,13 +2601,20 @@ export default function App() {
                       <div className="mt-2 h-px w-16 bg-gradient-to-r from-[#C9A84C] to-transparent" />
                     </div>
 
+                    {contactError && (
+                      <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-200 flex items-center gap-2.5">
+                        <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0" />
+                        <span>{contactError}</span>
+                      </div>
+                    )}
+
                     <div className="grid gap-4 sm:grid-cols-2">
                       <label className="block">
                         <span
                           className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.3em] text-[#C9A84C]/70"
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Full Name
+                          Full Name *
                         </span>
                         <input
                           value={formValues.fullName}
@@ -2481,7 +2629,7 @@ export default function App() {
                           className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.3em] text-[#C9A84C]/70"
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Phone Number
+                          Phone Number *
                         </span>
                         <input
                           value={formValues.phone}
@@ -2498,7 +2646,7 @@ export default function App() {
                         className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.3em] text-[#C9A84C]/70"
                         style={{ fontFamily: "'Cinzel', serif" }}
                       >
-                        Email Address
+                        Email Address *
                       </span>
                       <input
                         value={formValues.email}
@@ -2520,17 +2668,24 @@ export default function App() {
                         value={formValues.message}
                         onChange={(e) => setFormValues({ ...formValues, message: e.target.value })}
                         rows={4}
-                        required
                         className="luxury-input resize-none"
                         placeholder="Tell us about your luxury retail or hotel requirements."
                       />
                     </label>
                     <button
                       type="submit"
-                      className="btn-luxury-gold w-full rounded-full px-6 py-3.5 sm:py-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.2)] justify-center"
+                      disabled={contactSubmitting}
+                      className="btn-luxury-gold w-full rounded-full px-6 py-3.5 sm:py-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.2)] justify-center disabled:opacity-50"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Submit Inquiry
+                      {contactSubmitting ? (
+                        <span className="flex items-center gap-2">
+                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#08080E] border-t-transparent" />
+                          Sending Inquiry...
+                        </span>
+                      ) : (
+                        'Submit Inquiry'
+                      )}
                     </button>
                   </form>
                 )}
@@ -2616,21 +2771,51 @@ export default function App() {
             <p className="text-[9px] uppercase tracking-[0.4em] text-[#C9A84C] mb-4" style={{ fontFamily: "'Cinzel', serif" }}>
               Stay Informed
             </p>
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3 max-w-md">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
               <input
                 type="email"
+                required
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Your email address"
                 className="flex-1 bg-[#F5F0E8]/5 border border-[#C9A84C]/15 rounded-full px-6 py-3.5 text-sm text-[#F5F0E8]/70 placeholder-[#F5F0E8]/20 focus:outline-none focus:border-[#C9A84C]/50 transition-colors duration-300"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               />
               <button
                 type="submit"
-                className="btn-luxury-gold rounded-full px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] flex-shrink-0 w-full sm:w-auto justify-center"
+                disabled={newsletterSubmitting}
+                className="btn-luxury-gold rounded-full px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] flex-shrink-0 w-full sm:w-auto justify-center disabled:opacity-50"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
-                Subscribe
+                {newsletterSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#08080E] border-t-transparent" />
+                    Subscribing...
+                  </span>
+                ) : (
+                  'Subscribe'
+                )}
               </button>
             </form>
+
+            {newsletterStatus && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`mt-3 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs ${
+                  newsletterStatus.type === 'success'
+                    ? 'border border-[#C9A84C]/40 bg-[#C9A84C]/10 text-[#C9A84C]'
+                    : newsletterStatus.type === 'already'
+                    ? 'border border-amber-500/40 bg-amber-500/10 text-amber-300'
+                    : 'border border-red-500/40 bg-red-500/10 text-red-300'
+                }`}
+              >
+                {newsletterStatus.type === 'success' && <Check className="h-3.5 w-3.5 text-[#C9A84C]" />}
+                {newsletterStatus.type === 'already' && <CheckCircle2 className="h-3.5 w-3.5 text-amber-300" />}
+                {newsletterStatus.type === 'error' && <AlertCircle className="h-3.5 w-3.5 text-red-300" />}
+                <span>{newsletterStatus.message}</span>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Elegant mid divider */}
