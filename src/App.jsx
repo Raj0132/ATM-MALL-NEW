@@ -2,6 +2,15 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
 import { ArrowRight, MapPin, Phone, Mail, X, ChevronDown, Star, Menu, FileText, Download, CheckCircle2, AlertCircle, Check } from 'lucide-react';
 import { supabase } from './lib/supabaseClient';
+import {
+  validateEmail,
+  validatePhone,
+  validateName,
+  isRateLimited,
+  recordFormSubmission,
+  executeRecaptcha,
+  verifyRecaptcha,
+} from './lib/spamProtection';
 
 /* ─────────────────────────────────────────────────────
    DATA
@@ -873,7 +882,9 @@ function CinematicTransitionOverlay({ stage }) {
    BROCHURE REQUEST MODAL
 ───────────────────────────────────────────────────── */
 function BrochureModal({ isOpen, onClose }) {
-  const [form, setForm] = useState({ fullName: '', email: '', phone: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', website: '' });
+  const [fieldErrors, setFieldErrors] = useState({ fullName: '', email: '', phone: '' });
+  const [isBlocked, setIsBlocked] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -885,6 +896,7 @@ function BrochureModal({ isOpen, onClose }) {
     if (isOpen) {
       window.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
+      setIsBlocked(isRateLimited('brochure_modal'));
     }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -895,36 +907,81 @@ function BrochureModal({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    setFieldErrors({ fullName: '', email: '', phone: '' });
 
-    const fullName = form.fullName.trim();
-    const email = form.email.trim().toLowerCase();
-    const phone = form.phone.trim();
-
-    if (!fullName) {
-      setErrorMsg('Please enter your full name.');
+    // 1. Rate limiting check
+    if (isRateLimited('brochure_modal')) {
+      setIsBlocked(true);
+      setErrorMsg('Too many submissions. Please try again later.');
       return;
     }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrorMsg('Please enter a valid email address.');
+
+    // 2. Client-side field validations
+    const nameVal = validateName(form.fullName);
+    const emailVal = validateEmail(form.email);
+    const phoneVal = validatePhone(form.phone);
+
+    let hasError = false;
+    const nextErrors = { fullName: '', email: '', phone: '' };
+
+    if (!nameVal.isValid) {
+      nextErrors.fullName = nameVal.error;
+      hasError = true;
+    }
+    if (!emailVal.isValid) {
+      nextErrors.email = emailVal.error;
+      hasError = true;
+    }
+    if (!phoneVal.isValid) {
+      nextErrors.phone = phoneVal.error;
+      hasError = true;
+    }
+
+    if (hasError) {
+      setFieldErrors(nextErrors);
       return;
     }
-    if (!phone) {
-      setErrorMsg('Please enter your phone number.');
+
+    // 3. Honeypot check (invisible bot trap)
+    if (form.website && form.website.trim() !== '') {
+      setIsSubmitting(true);
+      // Silently fake success without inserting into Supabase
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitted(true);
+        const link = document.createElement('a');
+        link.href = '/ATM-MALL-Brochure.pdf';
+        link.download = 'ATM-MALL-Brochure.pdf';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, 500);
       return;
     }
 
     setIsSubmitting(true);
     try {
+      // 4. reCAPTCHA v3 verification
+      const token = await executeRecaptcha('brochure_request');
+      const isValidScore = await verifyRecaptcha(token);
+      if (!isValidScore) {
+        setErrorMsg('Something went wrong, please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+
       const { error } = await supabase.from('brochure_requests').insert([
         {
-          name: fullName,
-          email: email,
-          phone: phone,
+          name: nameVal.cleanValue,
+          email: emailVal.cleanValue,
+          phone: phoneVal.cleanValue,
         }
       ]);
 
       if (error) throw error;
 
+      recordFormSubmission('brochure_modal');
       setSubmitted(true);
 
       // Trigger automatic PDF download / open
@@ -948,7 +1005,8 @@ function BrochureModal({ isOpen, onClose }) {
     setTimeout(() => {
       setSubmitted(false);
       setErrorMsg('');
-      setForm({ fullName: '', email: '', phone: '' });
+      setFieldErrors({ fullName: '', email: '', phone: '' });
+      setForm({ fullName: '', email: '', phone: '', website: '' });
     }, 300);
   };
 
@@ -1052,7 +1110,19 @@ function BrochureModal({ isOpen, onClose }) {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                  {/* Honeypot field (invisible to real users) */}
+                  <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, pointerEvents: 'none', overflow: 'hidden' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={form.website}
+                      onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    />
+                  </div>
+
                   <label className="block">
                     <span
                       className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.28em] text-[#C9A84C]/80"
@@ -1061,13 +1131,18 @@ function BrochureModal({ isOpen, onClose }) {
                       Full Name *
                     </span>
                     <input
-                      required
                       type="text"
                       value={form.fullName}
-                      onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      onChange={(e) => {
+                        setForm({ ...form, fullName: e.target.value });
+                        if (fieldErrors.fullName) setFieldErrors({ ...fieldErrors, fullName: '' });
+                      }}
                       placeholder="e.g. Raj Patel"
-                      className="luxury-input"
+                      className={`luxury-input ${fieldErrors.fullName ? 'border-red-500/60 focus:border-red-400' : ''}`}
                     />
+                    {fieldErrors.fullName && (
+                      <span className="mt-1 block text-[11px] text-red-400 font-medium">{fieldErrors.fullName}</span>
+                    )}
                   </label>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1079,13 +1154,18 @@ function BrochureModal({ isOpen, onClose }) {
                         Email Address *
                       </span>
                       <input
-                        required
                         type="email"
                         value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        onChange={(e) => {
+                          setForm({ ...form, email: e.target.value });
+                          if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: '' });
+                        }}
                         placeholder="mail@domain.com"
-                        className="luxury-input"
+                        className={`luxury-input ${fieldErrors.email ? 'border-red-500/60 focus:border-red-400' : ''}`}
                       />
+                      {fieldErrors.email && (
+                        <span className="mt-1 block text-[11px] text-red-400 font-medium">{fieldErrors.email}</span>
+                      )}
                     </label>
 
                     <label className="block">
@@ -1096,20 +1176,25 @@ function BrochureModal({ isOpen, onClose }) {
                         Phone Number *
                       </span>
                       <input
-                        required
                         type="tel"
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        onChange={(e) => {
+                          setForm({ ...form, phone: e.target.value });
+                          if (fieldErrors.phone) setFieldErrors({ ...fieldErrors, phone: '' });
+                        }}
                         placeholder="+91 98765 43210"
-                        className="luxury-input"
+                        className={`luxury-input ${fieldErrors.phone ? 'border-red-500/60 focus:border-red-400' : ''}`}
                       />
+                      {fieldErrors.phone && (
+                        <span className="mt-1 block text-[11px] text-red-400 font-medium">{fieldErrors.phone}</span>
+                      )}
                     </label>
                   </div>
 
                   <div className="pt-3">
                     <button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isBlocked}
                       className="btn-luxury-gold w-full rounded-full py-3.5 sm:py-4 text-[10px] font-bold uppercase tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.25)] justify-center disabled:opacity-50"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
@@ -1189,7 +1274,9 @@ export default function App() {
   const [selectedImage,     setSelectedImage]     = useState(null);
   const [brochureModalOpen, setBrochureModalOpen] = useState(false);
   const [formSubmitted,     setFormSubmitted]     = useState(false);
-  const [formValues,        setFormValues]        = useState({ fullName: '', phone: '', email: '', message: '' });
+  const [formValues,        setFormValues]        = useState({ fullName: '', phone: '', email: '', message: '', website: '' });
+  const [contactFieldErrors,setContactFieldErrors]= useState({ fullName: '', phone: '', email: '' });
+  const [contactBlocked,    setContactBlocked]    = useState(false);
   const [scrolled,          setScrolled]          = useState(false);
   const [isLoading,         setIsLoading]         = useState(true);
   const [activeFilter,       setActiveFilter]       = useState('All');
@@ -1280,49 +1367,96 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Rate limiting initialization check on mount
+  useEffect(() => {
+    setContactBlocked(isRateLimited('contact_form'));
+    setNewsletterBlocked(isRateLimited('newsletter'));
+  }, []);
+
   const [contactSubmitting,   setContactSubmitting]   = useState(false);
   const [contactError,        setContactError]        = useState('');
   const [newsletterEmail,     setNewsletterEmail]     = useState('');
+  const [newsletterHoneypot,  setNewsletterHoneypot]  = useState('');
+  const [newsletterEmailError,setNewsletterEmailError]= useState('');
+  const [newsletterBlocked,   setNewsletterBlocked]   = useState(false);
   const [newsletterSubmitting,setNewsletterSubmitting]= useState(false);
   const [newsletterStatus,    setNewsletterStatus]    = useState(null); // { type: 'success' | 'already' | 'error', message: string }
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     setContactError('');
+    setContactFieldErrors({ fullName: '', phone: '', email: '' });
 
-    const fullName = formValues.fullName.trim();
-    const phone = formValues.phone.trim();
-    const email = formValues.email.trim().toLowerCase();
-    const message = formValues.message.trim();
-
-    if (!fullName) {
-      setContactError('Please enter your full name.');
+    // 1. Rate limiting check
+    if (isRateLimited('contact_form')) {
+      setContactBlocked(true);
+      setContactError('Too many submissions. Please try again later.');
       return;
     }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setContactError('Please enter a valid email address.');
+
+    // 2. Client-side field validations
+    const nameVal = validateName(formValues.fullName);
+    const phoneVal = validatePhone(formValues.phone);
+    const emailVal = validateEmail(formValues.email);
+
+    let hasError = false;
+    const nextErrors = { fullName: '', phone: '', email: '' };
+
+    if (!nameVal.isValid) {
+      nextErrors.fullName = nameVal.error;
+      hasError = true;
+    }
+    if (!phoneVal.isValid) {
+      nextErrors.phone = phoneVal.error;
+      hasError = true;
+    }
+    if (!emailVal.isValid) {
+      nextErrors.email = emailVal.error;
+      hasError = true;
+    }
+
+    if (hasError) {
+      setContactFieldErrors(nextErrors);
       return;
     }
-    if (!phone) {
-      setContactError('Please enter your phone number.');
+
+    // 3. Honeypot check (invisible bot trap)
+    if (formValues.website && formValues.website.trim() !== '') {
+      setContactSubmitting(true);
+      // Silently fake success without inserting into Supabase
+      setTimeout(() => {
+        setContactSubmitting(false);
+        setFormSubmitted(true);
+        setFormValues({ fullName: '', phone: '', email: '', message: '', website: '' });
+      }, 500);
       return;
     }
 
     setContactSubmitting(true);
     try {
+      // 4. reCAPTCHA v3 verification
+      const token = await executeRecaptcha('contact_form');
+      const isValidScore = await verifyRecaptcha(token);
+      if (!isValidScore) {
+        setContactError('Something went wrong, please try again.');
+        setContactSubmitting(false);
+        return;
+      }
+
       const { error } = await supabase.from('leads').insert([
         {
-          name: fullName,
-          phone: phone,
-          email: email,
-          message: message,
+          name: nameVal.cleanValue,
+          phone: phoneVal.cleanValue,
+          email: emailVal.cleanValue,
+          message: formValues.message.trim(),
         }
       ]);
 
       if (error) throw error;
 
+      recordFormSubmission('contact_form');
       setFormSubmitted(true);
-      setFormValues({ fullName: '', phone: '', email: '', message: '' });
+      setFormValues({ fullName: '', phone: '', email: '', message: '', website: '' });
       setContactError('');
     } catch (err) {
       console.error('Error submitting inquiry to Supabase leads table:', err);
@@ -1335,17 +1469,47 @@ export default function App() {
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
     setNewsletterStatus(null);
+    setNewsletterEmailError('');
 
-    const email = newsletterEmail.trim().toLowerCase();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setNewsletterStatus({ type: 'error', message: 'Please enter a valid email address.' });
+    // 1. Rate limiting check
+    if (isRateLimited('newsletter')) {
+      setNewsletterBlocked(true);
+      setNewsletterStatus({ type: 'error', message: 'Too many submissions. Please try again later.' });
+      return;
+    }
+
+    // 2. Client-side email validation
+    const emailVal = validateEmail(newsletterEmail);
+    if (!emailVal.isValid) {
+      setNewsletterEmailError(emailVal.error);
+      return;
+    }
+
+    // 3. Honeypot check (invisible bot trap)
+    if (newsletterHoneypot && newsletterHoneypot.trim() !== '') {
+      setNewsletterSubmitting(true);
+      setTimeout(() => {
+        setNewsletterSubmitting(false);
+        setNewsletterStatus({ type: 'success', message: 'Subscribed! Thank you for staying informed.' });
+        setNewsletterEmail('');
+        setNewsletterHoneypot('');
+      }, 500);
       return;
     }
 
     setNewsletterSubmitting(true);
     try {
+      // 4. reCAPTCHA v3 verification
+      const token = await executeRecaptcha('newsletter');
+      const isValidScore = await verifyRecaptcha(token);
+      if (!isValidScore) {
+        setNewsletterStatus({ type: 'error', message: 'Something went wrong, please try again.' });
+        setNewsletterSubmitting(false);
+        return;
+      }
+
       const { error } = await supabase.from('subscribers').insert([
-        { email: email }
+        { email: emailVal.cleanValue }
       ]);
 
       if (error) {
@@ -1363,6 +1527,7 @@ export default function App() {
         throw error;
       }
 
+      recordFormSubmission('newsletter');
       setNewsletterStatus({ type: 'success', message: 'Subscribed! Thank you for staying informed.' });
       setNewsletterEmail('');
     } catch (err) {
@@ -2590,7 +2755,19 @@ export default function App() {
                     </button>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleContactSubmit} className="space-y-5">
+                  <form onSubmit={handleContactSubmit} className="space-y-5" noValidate>
+                    {/* Honeypot field (invisible to real users) */}
+                    <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, pointerEvents: 'none', overflow: 'hidden' }} aria-hidden="true">
+                      <input
+                        type="text"
+                        name="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={formValues.website}
+                        onChange={(e) => setFormValues({ ...formValues, website: e.target.value })}
+                      />
+                    </div>
+
                     <div className="mb-5 sm:mb-7">
                       <h3
                         className="text-xl font-bold text-[#F5F0E8]"
@@ -2618,11 +2795,16 @@ export default function App() {
                         </span>
                         <input
                           value={formValues.fullName}
-                          onChange={(e) => setFormValues({ ...formValues, fullName: e.target.value })}
-                          required
-                          className="luxury-input"
+                          onChange={(e) => {
+                            setFormValues({ ...formValues, fullName: e.target.value });
+                            if (contactFieldErrors.fullName) setContactFieldErrors({ ...contactFieldErrors, fullName: '' });
+                          }}
+                          className={`luxury-input ${contactFieldErrors.fullName ? 'border-red-500/60 focus:border-red-400' : ''}`}
                           placeholder="Raj Patel"
                         />
+                        {contactFieldErrors.fullName && (
+                          <span className="mt-1.5 block text-[11px] text-red-400 font-medium">{contactFieldErrors.fullName}</span>
+                        )}
                       </label>
                       <label className="block">
                         <span
@@ -2633,12 +2815,17 @@ export default function App() {
                         </span>
                         <input
                           value={formValues.phone}
-                          onChange={(e) => setFormValues({ ...formValues, phone: e.target.value })}
-                          required
+                          onChange={(e) => {
+                            setFormValues({ ...formValues, phone: e.target.value });
+                            if (contactFieldErrors.phone) setContactFieldErrors({ ...contactFieldErrors, phone: '' });
+                          }}
                           type="tel"
-                          className="luxury-input"
+                          className={`luxury-input ${contactFieldErrors.phone ? 'border-red-500/60 focus:border-red-400' : ''}`}
                           placeholder="+91 95123 00392"
                         />
+                        {contactFieldErrors.phone && (
+                          <span className="mt-1.5 block text-[11px] text-red-400 font-medium">{contactFieldErrors.phone}</span>
+                        )}
                       </label>
                     </div>
                     <label className="block">
@@ -2650,12 +2837,17 @@ export default function App() {
                       </span>
                       <input
                         value={formValues.email}
-                        onChange={(e) => setFormValues({ ...formValues, email: e.target.value })}
-                        required
+                        onChange={(e) => {
+                          setFormValues({ ...formValues, email: e.target.value });
+                          if (contactFieldErrors.email) setContactFieldErrors({ ...contactFieldErrors, email: '' });
+                        }}
                         type="email"
-                        className="luxury-input"
+                        className={`luxury-input ${contactFieldErrors.email ? 'border-red-500/60 focus:border-red-400' : ''}`}
                         placeholder="mail@atmmall.in"
                       />
+                      {contactFieldErrors.email && (
+                        <span className="mt-1.5 block text-[11px] text-red-400 font-medium">{contactFieldErrors.email}</span>
+                      )}
                     </label>
                     <label className="block">
                       <span
@@ -2674,7 +2866,7 @@ export default function App() {
                     </label>
                     <button
                       type="submit"
-                      disabled={contactSubmitting}
+                      disabled={contactSubmitting || contactBlocked}
                       className="btn-luxury-gold w-full rounded-full px-6 py-3.5 sm:py-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_40px_rgba(201,168,76,0.2)] justify-center disabled:opacity-50"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
@@ -2771,20 +2963,40 @@ export default function App() {
             <p className="text-[9px] uppercase tracking-[0.4em] text-[#C9A84C] mb-4" style={{ fontFamily: "'Cinzel', serif" }}>
               Stay Informed
             </p>
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
-              <input
-                type="email"
-                required
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Your email address"
-                className="flex-1 bg-[#F5F0E8]/5 border border-[#C9A84C]/15 rounded-full px-6 py-3.5 text-sm text-[#F5F0E8]/70 placeholder-[#F5F0E8]/20 focus:outline-none focus:border-[#C9A84C]/50 transition-colors duration-300"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              />
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md" noValidate>
+              {/* Honeypot field (invisible to real users) */}
+              <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, pointerEvents: 'none', overflow: 'hidden' }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={newsletterHoneypot}
+                  onChange={(e) => setNewsletterHoneypot(e.target.value)}
+                />
+              </div>
+
+              <div className="flex-1 flex flex-col">
+                <input
+                  type="email"
+                  value={newsletterEmail}
+                  onChange={(e) => {
+                    setNewsletterEmail(e.target.value);
+                    if (newsletterEmailError) setNewsletterEmailError('');
+                  }}
+                  placeholder="Your email address"
+                  className={`bg-[#F5F0E8]/5 border ${newsletterEmailError ? 'border-red-500/60 focus:border-red-400' : 'border-[#C9A84C]/15 focus:border-[#C9A84C]/50'} rounded-full px-6 py-3.5 text-sm text-[#F5F0E8]/70 placeholder-[#F5F0E8]/20 focus:outline-none transition-colors duration-300 w-full`}
+                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                />
+                {newsletterEmailError && (
+                  <span className="mt-1.5 px-3 block text-[11px] text-red-400 font-medium">{newsletterEmailError}</span>
+                )}
+              </div>
+
               <button
                 type="submit"
-                disabled={newsletterSubmitting}
-                className="btn-luxury-gold rounded-full px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] flex-shrink-0 w-full sm:w-auto justify-center disabled:opacity-50"
+                disabled={newsletterSubmitting || newsletterBlocked}
+                className="btn-luxury-gold rounded-full px-6 py-3 sm:px-8 sm:py-3.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] flex-shrink-0 w-full sm:w-auto justify-center disabled:opacity-50 self-start"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
                 {newsletterSubmitting ? (
